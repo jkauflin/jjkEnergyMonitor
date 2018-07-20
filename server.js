@@ -29,6 +29,8 @@ Modification History
 2018-07-06 JJK  Back to the BBB after increasing panels from 4 to 6
 2018-07-07 JJK  Got it working with the old formulas and logging metrics
                 to my website
+2018-07-19 JJK  Got an Arduino Mega (SunFounder) to run StandardFirmataPlus
+                and the sensors, and got logging to emoncms again
 =============================================================================*/
 
 // Read environment variables from the .env file
@@ -51,6 +53,9 @@ const get = require('simple-get')
 // be sure to shut the REPL off!
 var five = require("johnny-five");
 
+var five = require('johnny-five');
+//var BeagleBone = require('beaglebone-io');
+
 var voltageSensor = null;
 var currVoltage = 0;
 var ampSensor = null;
@@ -65,7 +70,7 @@ var emoncmsUrl = "";
 var metricJSON = "";
 
 //var intervalSeconds = 30;
-var intervalSeconds = 10;
+var intervalSeconds = 20;
 var intVal = intervalSeconds * 1000;
 var currMs;
 var nextSendMsVoltage = 0;
@@ -110,6 +115,19 @@ for (var i = 0; i < numReadings; i++) {
 }
 var arrayFull1 = false;
 
+/*
+var board = new BeagleBone();
+ 
+board.on('ready', function () {
+  this.pinMode('A0', this.MODES.ANALOG);
+  this.analogRead('A0', function (value) {
+    console.log("BBB A0 = "+value);
+  });
+});
+
+  io: new BeagleBone(),
+*/
+
 // Create Johnny-Five board object
 var board = new five.Board({
   repl: false,
@@ -131,12 +149,14 @@ console.log("============ Starting board initialization ================");
 //-------------------------------------------------------------------------------------------------------
 board.on("ready", function() {
   console.log("board is ready");
-  
+
   // Define the voltage sensor
   this.wait(5000, function() {
     console.log("Initialize sensors");
     voltageSensor = new five.Sensor("A0");
+    //voltageSensor = new five.Sensor("P9_39");
     ampSensor = new five.Sensor("A1");
+    //ampSensor = new five.Sensor("P9_37");
   
     // Scale the sensor's data from 0-1023 to 0-10 and log changes
     voltageSensor.on("change", function() {
@@ -195,8 +215,13 @@ board.on("ready", function() {
       // calculate the average:
       if (arrayFull1) {
         averageA1 = totalA1 / numReadings;    
-        tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
+        //tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
+        tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
         currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
+        //console.log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
+        //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
+        //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
+        //const ACSoffset = 2500; 
       }
 
       currMs = Date.now();
@@ -210,26 +235,6 @@ board.on("ready", function() {
 
     });
 
-/*
-currVoltage = 189.1
-currAmperage = 486.9
-currVoltage = 198.6
-currAmperage = 538.6
-currVoltage = 186.5
-currAmperage = 540.7
-
-A1 value = 540
-A0 value = 197
-A1 value = 542
-A0 value = 181
-A1 value = 541
-A0 value = 193
-A0 value = 194
-A0 value = 190
-A0 value = 198
-A1 value = 538
-A0 value = 181
-*/
 
   });
 
@@ -246,6 +251,10 @@ A0 value = 181
 
 
 function logMetric() {
+  if (currVoltage < 2.0) {
+    currVoltage = 0.0;
+    currAmperage = 0.0;
+  }
   currWatts = currVoltage * currAmperage;
   //pvWattsUsed = pvWatts * 0.85;
   //var sURL = EMONCMS_INPUT_URL + "&json={" + data + ",pvWatts:" + pvWatts.toFixed(3) + ",pvWattsUsed:" + pvWattsUsed.toFixed(3) + "}";
@@ -255,11 +264,12 @@ function logMetric() {
       +",pvWatts:"+currWatts
       +"}";
   emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
+  //console.log("logMetric, metricJSON = "+metricJSON);
 
   get.concat(emoncmsUrl, function (err, res, data) {
     if (err) {
-      //console.error("Error in logMetric send, metricJSON = "+metricJSON);
-      //console.error("err = "+err);
+      console.error("Error in logMetric send, metricJSON = "+metricJSON);
+      console.error("err = "+err);
     } else {
       //console.log(res.statusCode) // 200 
       //console.log(data) // Buffer('this is the server response') 

@@ -17,6 +17,7 @@
     "express": "^4.16.2",
     "get-json": "^1.0.0",
     "johnny-five": "^0.15.0",
+    "beaglebone-io": "^4.0.0",
     "json-fs-store": "^1.0.1",
     "node-datetime": "^2.0.3",
     "simple-get": "^2.7.0",
