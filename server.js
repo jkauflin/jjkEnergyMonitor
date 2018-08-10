@@ -31,6 +31,7 @@ Modification History
                 to my website
 2018-07-19 JJK  Got an Arduino Mega (SunFounder) to run StandardFirmataPlus
                 and the sensors, and got logging to emoncms again
+2018-08-10 JJK  Modified to only send to emoncms between 6am and 8pm
 =============================================================================*/
 
 // Read environment variables from the .env file
@@ -69,8 +70,8 @@ const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
 var emoncmsUrl = "";
 var metricJSON = "";
 
-//var intervalSeconds = 30;
-var intervalSeconds = 20;
+var intervalSeconds = 30;
+//var intervalSeconds = 20;
 var intVal = intervalSeconds * 1000;
 var currMs;
 var nextSendMsVoltage = 0;
@@ -266,15 +267,19 @@ function logMetric() {
   emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
   //console.log("logMetric, metricJSON = "+metricJSON);
 
-  get.concat(emoncmsUrl, function (err, res, data) {
-    if (err) {
-      console.error("Error in logMetric send, metricJSON = "+metricJSON);
-      console.error("err = "+err);
-    } else {
-      //console.log(res.statusCode) // 200 
-      //console.log(data) // Buffer('this is the server response') 
-    }
-  });
+  var date = new Date();
+  var hours = date.getHours();
+  if (hours > 6 && hours < 20) {
+    get.concat(emoncmsUrl, function (err, res, data) {
+      if (err) {
+        //console.error("Error in logMetric send, metricJSON = "+metricJSON);
+        console.error("Error in logMetric send, err = "+err);
+      } else {
+        //console.log(res.statusCode) // 200 
+        //console.log(data) // Buffer('this is the server response') 
+      }
+    });
+  }
 
-}
+} // function logMetric() {
 
