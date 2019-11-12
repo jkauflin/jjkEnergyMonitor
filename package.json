@@ -1,7 +1,7 @@
 {
-  "name": "jjkgenvmonitor",
+  "name": "jjkenergymonitor",
   "version": "2.0.0",
-  "description": "Monitor and control grow environment",
+  "description": "Monitor solar energy system",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,7 +11,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jkauflin/jjkGenvMonitor.git"
+    "url": "https://github.com/jkauflin/jjkEnergyMonitor.git"
   },
   "dependencies": {
     "dotenv": "^4.0.0",
