@@ -47,6 +47,8 @@ Modification History
 2019-11-03 JJK  Making sure watering is working
 2019-11-06 JJK  Modifying the air/heat toggle to give the tempature
                 adjustment more range to operate
+-----------------------------------------------------------------------------
+2019-11-11 JJK  Modifying to use raspi-io
 =============================================================================*/
 var dateTime = require('node-datetime');
 const get = require('simple-get')
@@ -54,6 +56,7 @@ const EventEmitter = require('events');
 
 // Library to control the Arduino board
 var five = require("johnny-five");
+var Raspi = require("raspi-io").RaspiIO;
 
 // Set up the configuration store and initial values
 //var store = require('json-fs-store')(process.env.STORE_DIR);
@@ -183,7 +186,8 @@ var arrayFull = false;
 // be sure to shut the REPL off!
 var board = new five.Board({
     repl: false,
-    debug: false
+    debug: false,
+    io: new Raspi()
 //    timeout: 12000
 });
 
@@ -204,28 +208,22 @@ board.on("ready", function () {
     log("*** board ready ***");
     boardReady = true;
 
-    log("Initializing relays");
-    relays = new five.Relays([10, 11, 12, 13]);
-
-    // Start the function to toggle air ventilation ON and OFF
-    log("Starting Air toggle interval");
-    setTimeout(toggleAir, 1000);
-
     // If the board is exiting, turn all the relays off
     this.on("exit", function () {
         log("on EXIT");
-        turnRelaysOFF();
+        //turnRelaysOFF();
     });
     // Handle a termination signal
     process.on('SIGTERM', function () {
         log('on SIGTERM');
-        turnRelaysOFF();
+        //turnRelaysOFF();
     });
     //[`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach((eventType) => {
     //    process.on(eventType, cleanUpServer.bind(null, eventType));
     //})
 
     // Define the thermometer sensor
+    /*
     this.wait(2000, function () {
         // This requires OneWire support using the ConfigurableFirmata
         log("Initialize tempature sensor");
@@ -263,9 +261,10 @@ board.on("ready", function () {
 
         }); // on termometer change
     });
-
+    */
+   
     // Start sending metrics 4 seconds after starting (so things are calm)
-    setTimeout(logMetric, 4000);
+    //setTimeout(logMetric, 4000);
 
     log("End of board.on (initialize) event");
 

@@ -84,7 +84,7 @@ httpServer.listen(WEB_PORT,function() {
 });
 
 // Include the Arduino board functions
-//var boardFunctions = require('./boardFunctions.js');
+var boardFunctions = require('./boardFunctions.js');
 
 /*
 app.get('/GetValues', function (req, res, next) {

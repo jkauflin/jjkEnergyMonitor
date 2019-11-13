@@ -14,3 +14,4 @@ yarn-error.log*
 .env
 package-lock.json
 store.json
+storeid.json
