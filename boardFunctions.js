@@ -56,7 +56,7 @@ const EventEmitter = require('events');
 
 // Library to control the Arduino board
 var five = require("johnny-five");
-var Raspi = require("raspi-io").RaspiIO;
+//var Raspi = require("raspi-io").RaspiIO;
 
 // Set up the configuration store and initial values
 //var store = require('json-fs-store')(process.env.STORE_DIR);
@@ -184,12 +184,24 @@ var arrayFull = false;
 // Create Johnny-Five board object
 // When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
 // be sure to shut the REPL off!
+/*
 var board = new five.Board({
     repl: false,
     debug: false,
     io: new Raspi()
 //    timeout: 12000
 });
+*/
+
+// Create Johnny-Five board object
+// When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
+// be sure to shut the REPL off!
+var board = new five.Board({
+    repl: false,
+    debug: false
+    //    timeout: 12000
+});
+
 
 // State variables
 var boardReady = false;

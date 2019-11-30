@@ -37,6 +37,11 @@ Modification History
 2019-09-28 JJK  Re-implementing web display and updates to config values
 2019-11-11 JJK  Pulling in the newest NodeJS coding ideas and getting the
                 Energy Monitor working again using just a Pi
+2019-11-29 JJK  I got a voltage converter and soldered the pins, then 
+                realized I needed analog voltage inputs to read the energy
+                monitor sensors, so I went back to using an Arduino mega.
+                Installed Examples --> Firmata --> StandardFirmata through
+                the IDE
 =============================================================================*/
 
 // Read environment variables from the .env file
