@@ -96,18 +96,9 @@ app.get('/GetValues', function (req, res, next) {
     res.send(JSON.stringify(boardFunctions.getStoreRec()));
 });
 
-app.get('/ClearLog', function (req, res, next) {
-    boardFunctions.clearLog();
-    res.send(JSON.stringify(boardFunctions.getStoreRec()));
-});
-
 app.post('/UpdateConfig', function (req, res, next) {
     boardFunctions.updateConfig(req.body);
     res.send(JSON.stringify(boardFunctions.getStoreRec()));
 });
 
-app.post('/Water', function (req, res, next) {
-    boardFunctions.water(req.body);
-    res.send('ok');
-});
 */

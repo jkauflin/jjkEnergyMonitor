@@ -1,54 +1,23 @@
 /*==============================================================================
-(C) Copyright 2018 John J Kauflin, All rights reserved. 
+(C) Copyright 2019 John J Kauflin, All rights reserved. 
 -----------------------------------------------------------------------------
 DESCRIPTION: NodeJS module to handle board functions.  Communicates with
-             the Arduino Mega board
+             the Arduino Mega board, and monitors the following voltage
+             sensors to determine energy/power being generated from a
+             array of solar panels:
+A0 - Voltage level from solar array - using resitor split technique
+A1 - PV current (amps from solar panels) - using non-invasive current monitor
+
+Calculation uses these to get watts:
+Power (in Watts) = Voltage(in Volts) x Current(in Amps)
+
 -----------------------------------------------------------------------------
 Modification History
-2018-01-06 JJK  Initial version
-2018-01-14 JJK  Got moisture sensor working and sending data to emoncms
-2018-03-06 JJK  Got relays working to control electric systems
-2018-03-10 JJK  Testing production relays
-2018-03-11 JJK  Adding emoncms logging of relay activity, and using 
-                setTimeout to turn air ventiliation ON and OFF
-2018-03-13 JJK  Added logic to run lights for 18 hours
-2018-03-25 JJK  Added logging of moisture sensor data
-2018-03-26 JJK  Working on control of water relay
-2018-03-29 JJK  Added 10 value arrays for smoothing
-2018-03-31 JJK  Swapped the arduino and relays boards, and re-ordered the
-                initialization sequence to solve the board timeout errors
-2018-04-01 JJK  Working on initialization stability
-                Doubled the board initialization timeout from 10 to 20 secs
-                Added set relays OFF on exit
-                Delay set of initial relays and air toggle
-2018-04-02 JJK  Added node-webcam to take selfies of environment
-                Added water for X seconds when lights are turned on
-2018-04-05 JJK  Working on clean board initializations
-                Removed moisture sensor (wasn't really giving good info)
-2018-04-06 JJK  Re-working metrics logging to give consistent values to
-                web ecomcms.
-2018-04-07 JJK  Added adjustment to airDuration based on tempature (if it
-                drops below 70 increase duration)
-2018-04-14 JJK  Added toggleHeat and separate from air ventilation
-2018-04-15 JJK  Modified to turn heat on when air goes off
-2018-04-22 JJK  Working well with the Pi - check selfie and water timing
-2018-05-14 JJK  Added store to save application configuration values
-2018-05-18 JJK  Modified to accept configuration updates from web client
-2018-06-18 JJK  Added lightDuration to store rec
-2018-08-19 JJK  Turned off camera, added important dates and description
-2018-09-30 JJK  Turned metrics back on to track tempature
-2019-09-27 JJK  Testing new digital relay
-2019-10-01 JJK  Checking JSON store functions, and 4 channel solid state relay
-2019-10-02 JJK  Added a log message array and store rec save method.
-                Getting the 4 channel relay working.  Checking metric sends
-2019-10-11 JJK  Testing service shutdown
-2019-10-13 JJK  Getting it Production ready and implementing an audit array
-2019-10-20 JJK  Added new fields for germination and bloom dates
-2019-11-03 JJK  Making sure watering is working
-2019-11-06 JJK  Modifying the air/heat toggle to give the tempature
-                adjustment more range to operate
------------------------------------------------------------------------------
-2019-11-11 JJK  Modifying to use raspi-io
+2019-11-29 JJK  Gave up on raspi-io for now because I need the analog 
+                voltage sensors on the Arduino Mega board.  Using johnny-five
+                library and StandardFirmata on the Arduino
+2019-11-30 JJK  Got the old calculations and the send to a personal emoncms
+                working again (using static interval method that emoncms likes)
 =============================================================================*/
 var dateTime = require('node-datetime');
 const get = require('simple-get')
@@ -65,28 +34,8 @@ var storeId = 'storeid';
 var logArray = [];
 var initStoreRec = {
     id: storeId,                // unique identifier
-    desc: 'Blanket Flower',           // description
-    daysToGerm: '7 to 15',
-    daysToBloom: '90 to 180',
-    germinationStart: '2019-10-13',       // date seeds were planted
-    germinationDate: '',        // date the seeds germinated or sprouted
-    estBloomDate: '2020-01-13',              // 
-    bloomDate: '',              // 
-    harvestDate: '',            // harvest start date
-    cureDate: '',               // curing start date
-    productionDate: '',         // production complete date
-    targetTemperature: 77,      // degrees fahrenheit
-    airInterval: 2,             // minutes
-    airDuration: 2,             // minutes
-    heatInterval: 1,            // minutes  NOT USED
-    heatDuration: 1,            // minutes
-    heatDurationMin: 0.5,       // minutes
-    heatDurationMax: 1.5,       // minutes
-    lightDuration: 18,          // hours
-    waterDuration: 20           // seconds
+    desc: 'energy monitor'      // description
 };
-
-//logList: logArray
 
 // Structure to hold current configuration values
 var sr = initStoreRec;
@@ -139,47 +88,48 @@ var nodewebcamOptions = {
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
 var emoncmsUrl = "";
 var metricJSON = "";
-
-//var intervalSeconds = 30;
-//var intervalSeconds = 10;
 var intervalSeconds = 30;
 var metricInterval = intervalSeconds * 1000;
-var thermometer = null;
-var currTemperature = sr.targetTemperature;
-const TEMPATURE_MAX = sr.targetTemperature + 1.0;
-const TEMPATURE_MIN = sr.targetTemperature - 1.0;
 const minutesToMilliseconds = 60 * 1000;
 const secondsToMilliseconds = 1000;
 
-var relays = null;
-const LIGHTS = 0;
-const WATER = 1;
-const AIR = 2;
-const HEAT = 3;
-const relayNames = ["lights", "water", "air",  "heat"];
-const relayMetricON = 72;
-const relayMetricOFF = relayMetricON-1;
-const relayMetricValues = [relayMetricOFF,relayMetricOFF,relayMetricOFF,relayMetricOFF];
+var voltageSensor = null;
+var currVoltage = 0;
+var ampSensor = null;
+var currAmperage = 0;
+var currWatts = 0;
 
-const OFF = 0;
-const ON = 1;
-var currAirVal = OFF;
-var currHeatVal = OFF;
-var currLightsVal = OFF;
-var date;
-var hours = 0;
-var airTimeout = 1.0;
+const analogPinMax = 1023.0;
+const arduinoPower = 5.0;
+const res1 = 330000.0;
+const res2 = 10000.0;
+//int mVperAmp = 66; // use 100 for 20A Module and 66 for 30A Module
+const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
+const ACSoffset = 2500;
+var tempVoltage = 0;
+log("DC VOLTMETER Maximum Voltage: "+(arduinoPower / (res2 / (res1 + res2))));
 
 // Variables to hold sensor values
-var numReadings = 10;   // Total number of readings to average
-var readingsA0 = [];    // Array of readings
-var indexA0 = 0;        // the index of the current reading
-var totalA0 = 0;        // the running total
+var numReadings = 10; // Total number of readings to average
+var readingsA0 = []; // Array of readings
+var indexA0 = 0; // the index of the current reading
+var totalA0 = 0; // the running total
+var averageA0 = 0.0;
 // initialize all the readings to 0:
 for (var i = 0; i < numReadings; i++) {
-    readingsA0[i] = 0;     
+    readingsA0[i] = 0;
 }
 var arrayFull = false;
+
+var readingsA1 = []; // Array of readings
+var indexA1 = 0; // the index of the current reading
+var totalA1 = 0; // the running total
+var averageA1 = 0.0;
+// initialize all the readings to 0:
+for (var i = 0; i < numReadings; i++) {
+    readingsA1[i] = 0;
+}
+var arrayFull1 = false;
 
 // Create Johnny-Five board object
 // When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
@@ -202,7 +152,6 @@ var board = new five.Board({
     //    timeout: 12000
 });
 
-
 // State variables
 var boardReady = false;
 
@@ -220,34 +169,30 @@ board.on("ready", function () {
     log("*** board ready ***");
     boardReady = true;
 
-    // If the board is exiting, turn all the relays off
+    // If the board is exiting, execute cleanup actions
     this.on("exit", function () {
         log("on EXIT");
-        //turnRelaysOFF();
+        //cleanup actions
     });
     // Handle a termination signal
     process.on('SIGTERM', function () {
         log('on SIGTERM');
-        //turnRelaysOFF();
+        //cleanup actions
     });
-    //[`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach((eventType) => {
-    //    process.on(eventType, cleanUpServer.bind(null, eventType));
-    //})
 
-    // Define the thermometer sensor
-    /*
-    this.wait(2000, function () {
-        // This requires OneWire support using the ConfigurableFirmata
-        log("Initialize tempature sensor");
-        thermometer = new five.Thermometer({
-            controller: "DS18B20",
-            pin: 2
-        });
+    // Start sending metrics 10 seconds after starting (so things are calm and value arrays are full)
+    setTimeout(logMetric, 10*secondsToMilliseconds);
 
-        thermometer.on("change", function () {
+    // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
+    this.wait(5*secondsToMilliseconds, function () {
+        console.log("Initialize sensors");
+        voltageSensor = new five.Sensor("A0");
+        ampSensor = new five.Sensor("A1");
+
+        voltageSensor.on("change", function () {
             // subtract the last reading:
             totalA0 = totalA0 - readingsA0[indexA0];
-            readingsA0[indexA0] = this.fahrenheit;
+            readingsA0[indexA0] = this.value;
             // add the reading to the total:
             totalA0 = totalA0 + readingsA0[indexA0];
             // advance to the next position in the array: 
@@ -258,126 +203,74 @@ board.on("ready", function () {
                 indexA0 = 0;
                 arrayFull = true;
             }
-            // calculate the average:
+            // calculate the average when the array is full
             if (arrayFull) {
-                currTemperature = (totalA0 / numReadings).toFixed(2);
+                currVoltage
+                averageA0 = totalA0 / numReadings;
+                // Calculate the current voltage
+                currVoltage = ((averageA0 / analogPinMax) * arduinoPower) / (res2 / (res1 + res2));
             }
+        });
 
-            // Check to adjust the duration of ventilation and heating according to tempature
-            if (currTemperature < TEMPATURE_MIN) {
-                sr.heatDuration = sr.heatDurationMax;
+        ampSensor.on("change", function () {
+            // subtract the last reading:
+            totalA1 = totalA1 - readingsA1[indexA1];
+            readingsA1[indexA1] = this.value;
+            // add the reading to the total:
+            totalA1 = totalA1 + readingsA1[indexA1];
+            // advance to the next position in the array: 
+            indexA1 = indexA1 + 1;
+            // if we're at the end of the array...
+            if (indexA1 >= numReadings) {
+                // ...wrap around to the beginning:
+                indexA1 = 0;
+                arrayFull1 = true;
             }
-            if (currTemperature > TEMPATURE_MAX) {
-                sr.heatDuration = sr.heatDurationMin;
+            // calculate the average:
+            if (arrayFull1) {
+                averageA1 = totalA1 / numReadings;
+                //tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
+                tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
+                currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
+                //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
+                //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
+                //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
+                //const ACSoffset = 2500; 
             }
-
-        }); // on termometer change
+        });
     });
-    */
    
-    // Start sending metrics 4 seconds after starting (so things are calm)
-    //setTimeout(logMetric, 4000);
-
     log("End of board.on (initialize) event");
 
 }); // board.on("ready", function() {
 
-function turnRelaysOFF() {
-    log("Setting relays OFF");
-    setRelay(LIGHTS, OFF);
-    setRelay(AIR, OFF);
-    setRelay(HEAT, OFF);
-    setRelay(WATER, OFF);
-}
-
-function setRelay(relayNum, relayVal) {
-    if (relayVal) {
-        // If value is 1 or true, set the relay to turn ON and let the electricity flow
-        //relays[relayNum].open();
-        relays[relayNum].on();
-        //console.log(relayNames[relayNum]+" ON");
-        //relayMetricValues[relayNum] = relayMetricON + (relayNum * 2);
-        relayMetricValues[relayNum] = relayMetricON + relayNum;
-    } else {
-        // If value is 0 or false, set the relay to turn OFF and stop the flow of electricity
-        //relays[relayNum].close();
-        relays[relayNum].off();
-        //console.log(relayNames[relayNum]+" OFF");
-        relayMetricValues[relayNum] = relayMetricOFF;
-    }
-}
-
-// Function to toggle air ventilation ON and OFF
-function toggleAir() {
-  airTimeout = sr.airInterval;
-
-  if (currAirVal == OFF) {
-    //log("Turning Air ON");
-    setRelay(AIR,ON);
-    currAirVal = ON;
-    airTimeout = sr.airDuration;
-  } else {
-    //log("Turning Air OFF");
-    setRelay(AIR,OFF);
-    currAirVal = OFF;
-    airTimeout = sr.airInterval;
-    // When the air goes off, turn the heat on
-    if (currHeatVal == OFF) {
-      setTimeout(turnHeatOn,0);
-    }
-  }
-
-  date = new Date();
-  hours = date.getHours();
-  //log("lightDuration = "+sr.lightDuration+", hours = "+hours);
-  if (hours > (sr.lightDuration - 1)) {
-    if (currLightsVal == ON) {
-      setRelay(LIGHTS,OFF);
-      currLightsVal = OFF;
-    }
-  } else {
-    if (currLightsVal == OFF) {
-      setRelay(LIGHTS,ON);
-      currLightsVal = ON;
-      // Take a selfie when you turn the lights on
-      //setTimeout(letMeTakeASelfie, 100);
-
-      // Water the plants for a few seconds when the light come on
-      setTimeout(waterThePlants, 500);
-    }
-  }
-
-  // Recursively call the function with the current timeout value  
-  setTimeout(toggleAir,airTimeout * minutesToMilliseconds);
-
-} // function toggleAir() {
-
-// Function to turn air ventilation in/heat ON
-function turnHeatOn() {
-  //log("Turning Heat ON");
-  setRelay(HEAT,ON);
-  currHeatVal = ON;
-  // Queue up function to turn the heat back off after the duration time
-  setTimeout(turnHeatOff,sr.heatDuration * minutesToMilliseconds);
-}
-// Function to turn air ventilation in/heat OFF
-function turnHeatOff() {
-  //log("Turning Heat OFF");
-  setRelay(HEAT,OFF);
-  currHeatVal = OFF;
-}
 
 // Send metric values to a website
 function logMetric() {
-    metricJSON = "{" + "tempature:" + currTemperature
-        + ",heatDuration:" + sr.heatDuration
-        + "," + relayNames[0] + ":" + relayMetricValues[0]
-        + "," + relayNames[1] + ":" + relayMetricValues[1]
-        + "," + relayNames[2] + ":" + relayMetricValues[2]
-        + "," + relayNames[3] + ":" + relayMetricValues[3]
-        + "}";
-    emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
+    // Just set low values to zero
+    if (currVoltage < 2.0) {
+        currVoltage = 0.0;
+        currAmperage = 0.0;
+    }
 
+    // Calculate current PV watts from voltage and amps
+    currWatts = currVoltage * currAmperage;
+
+    // Construct the JSON structure and URL to send values to the emoncms web site
+    metricJSON = "{" + "pvVolts:" + currVoltage.toFixed(2) +
+        ",pvAmps:" + currAmperage.toFixed(2) +
+        ",pvWatts:" + currWatts.toFixed(2) +
+        "}";
+    emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
+    //log("logMetric, metricJSON = "+metricJSON);
+
+    // Use this if we need to limit the send to between the hours of 6 and 20
+    //var date = new Date();
+    //var hours = date.getHours();
+    //if (hours > 6 && hours < 20) {
+    //}
+
+    // Call the simple GET function to make the web HTTP request
     get.concat(emoncmsUrl, function (err, res, data) {
         if (err) {
             log("Error in logMetric send, metricJSON = " + metricJSON);
@@ -394,19 +287,9 @@ function logMetric() {
 }
 
 function webControl(boardMessage) {
-  if (boardMessage.relay3 != null) {
-    setRelay(HEAT,boardMessage.relay3);
-  }
-  if (boardMessage.relay4 != null) {
-    //setRelay(WATER,boardMessage.relay4);
-    if (boardMessage.relay4 == 1) {
-      setTimeout(waterThePlants);
-    }
-  }
-
-  if (boardMessage.selfie != null) {
-    setTimeout(letMeTakeASelfie);
-  }
+  //if (boardMessage.relay3 != null) {
+  //  setRelay(HEAT,boardMessage.relay3);
+  // }
 
   // If send a new store rec, replace the existing and store it to disk
   if (boardMessage.storeRec != null) {
@@ -420,41 +303,6 @@ function webControl(boardMessage) {
   }
 
 } // function webControl(boardMessage) {
-
-
-function letMeTakeASelfie() {
-  /*
-  setTimeout(() => {
-    //console.log("Taking a selfie with fswebcam capture");
-    // figure out how to save a weekly picture
-    nodeWebcam.capture(process.env.IMAGES_DIR+"genvImage", nodewebcamOptions, function( err, data ) {
-      if (err != null) {
-        console.log("Error with webcam capture, err = "+err);
-      }
-      //var image = "<img src='" + data + "'>";
-      //setRelay(HEAT,OFF);
-    });
-  }, 100);
-  */
-}
-
-function waterThePlants() {
-    log("Watering the plants, waterDuration = "+sr.waterDuration);
-    setRelay(WATER,ON);
-    setTimeout(() => {
-        log("Watering the plants OFF");
-        setRelay(WATER,OFF);
-    }, sr.waterDuration * secondsToMilliseconds);
-}
-
-function _waterOn(waterSeconds) {
-    log("Turning Water ON, seconds = " + waterSeconds);
-    setRelay(WATER, ON);
-    setTimeout(() => {
-        log("Turning Water OFF");
-        setRelay(WATER, OFF);
-    }, waterSeconds * secondsToMilliseconds);
-}
 
 function getStoreRec() {
     return sr;
@@ -474,8 +322,6 @@ function _saveStoreRec() {
 function log(inStr) {
     var logStr = dateTime.create().format('Y-m-d H:M:S') + " " + inStr;
     console.log(logStr);
-    //logArray.push(logStr);
-    //_saveStoreRec();
 }
 
 function updateConfig(inStoreRec) {
@@ -484,19 +330,7 @@ function updateConfig(inStoreRec) {
     _saveStoreRec();
 }
 
-function clearLog() {
-    logArray.length = 0;
-    _saveStoreRec();
-}
-
-function water(inRec) {
-    _waterOn(inRec.waterSeconds);
-}
-
 module.exports = {
     getStoreRec,
-    updateConfig,
-    clearLog,
-    water
+    updateConfig
 };
-
