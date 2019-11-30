@@ -88,8 +88,7 @@ var nodewebcamOptions = {
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
 var emoncmsUrl = "";
 var metricJSON = "";
-//var intervalSeconds = 30;
-var intervalSeconds = 10;
+var intervalSeconds = 20;
 var metricInterval = intervalSeconds * 1000;
 const minutesToMilliseconds = 60 * 1000;
 const secondsToMilliseconds = 1000;
@@ -206,10 +205,11 @@ board.on("ready", function () {
             }
             // calculate the average when the array is full
             if (arrayFull) {
-                currVoltage
                 averageA0 = totalA0 / numReadings;
                 // Calculate the current voltage
-                currVoltage = ((averageA0 / analogPinMax) * arduinoPower) / (res2 / (res1 + res2));
+                // currVoltage = ((averageA0 / analogPinMax) * arduinoPower) / (res2 / (res1 + res2));
+                // 11/30/2019 JJK - Adjust to -30
+                currVoltage = ((averageA0 / (analogPinMax - 30)) * arduinoPower) / (res2 / (res1 + res2));
             }
         });
 
@@ -231,7 +231,9 @@ board.on("ready", function () {
             if (arrayFull1) {
                 averageA1 = totalA1 / numReadings;
                 //tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
-                tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
+                //tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
+                // 11/30/2019 JJK - Adjustment to 5006
+                tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
                 currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
                 //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
                 //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
