@@ -14,7 +14,7 @@
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" 
         rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" 
         crossorigin="anonymous" />
-    <link rel="stylesheet" href="css/main.css?ver=1.012" />
+    <link rel="stylesheet" href="css/main.css?ver=1.020" />
 </head>
 
 <body>
@@ -34,72 +34,18 @@
         <!-- Column 1 -->
         <div class="col-sm-4">
             <form>
+                <!--
                 <div class="form-group row">
                     <label for="targetTemperature" class="col-sm-8 col-form-label text-right">Target Temp</label>
                     <div class="col-sm-4">
                         <input id="targetTemperature" class="form-control">
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="airInterval" class="col-sm-8 col-form-label text-right">Air Interval</label>
-                    <div class="col-sm-4">
-                        <input id="airInterval" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="airDuration" class="col-sm-8 col-form-label text-right">Air Duration</label>
-                    <div class="col-sm-4">
-                        <input id="airDuration" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="heatInterval" class="col-sm-8 col-form-label text-right">Heat Interval</label>
-                    <div class="col-sm-4">
-                        <input id="heatInterval" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="heatDuration" class="col-sm-8 col-form-label text-right">Heat Duration</label>
-                    <div class="col-sm-4">
-                        <input id="heatDuration" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="heatDurationMin" class="col-sm-8 col-form-label text-right">Heat Duration Min</label>
-                    <div class="col-sm-4">
-                        <input id="heatDurationMin" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="heatDurationMax" class="col-sm-8 col-form-label text-right">Heat Duration Max</label>
-                    <div class="col-sm-4">
-                        <input id="heatDurationMax" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="lightDuration" class="col-sm-8 col-form-label text-right">Light Duration</label>
-                    <div class="col-sm-4">
-                        <input id="lightDuration" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="waterDuration" class="col-sm-8 col-form-label text-right">Water Duration</label>
-                    <div class="col-sm-4">
-                        <input id="waterDuration" class="form-control">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="waterSeconds" class="col-sm-8 col-form-label text-right">Water Seconds</label>
-                    <div class="col-sm-4">
-                        <input id="waterSeconds" class="form-control">
-                    </div>
-                </div>
+                -->
 
                 <div class="form-group row">
                     <div class="col-sm-8">
-                        <button id="ClearLogButton" type="button" class="btn btn-success">Clear log</button>
                         <button id="UpdateButton" type="button" class="btn btn-primary">Update</button>
-                        <button id="WaterButton" type="button" class="btn btn-warning">Water</button>
                     </div>
                 </div>
             </form>
@@ -117,61 +63,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group row">
-                        <label for="daysToGerm" class="col-sm-5 col-form-label text-right">Days to Germ</label>
-                        <div class="col-sm-7">
-                            <input id="daysToGerm" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="daysToBloom" class="col-sm-5 col-form-label text-right">Days to Bloom</label>
-                        <div class="col-sm-7">
-                            <input id="daysToBloom" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="germinationStart" class="col-sm-5 col-form-label text-right">Germination Start</label>
-                        <div class="col-sm-7">
-                            <input id="germinationStart" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="germinationDate" class="col-sm-5 col-form-label text-right">Germination Date</label>
-                        <div class="col-sm-7">
-                            <input id="germinationDate" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="estBloomDate" class="col-sm-5 col-form-label text-right">Est Bloom Date</label>
-                        <div class="col-sm-7">
-                            <input id="estBloomDate" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="bloomDate" class="col-sm-5 col-form-label text-right">Bloom Date</label>
-                        <div class="col-sm-7">
-                            <input id="bloomDate" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="harvestDate" class="col-sm-5 col-form-label text-right">Harvest Start</label>
-                        <div class="col-sm-7">
-                            <input id="harvestDate" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="cureDate" class="col-sm-5 col-form-label text-right">Cure Start</label>
-                        <div class="col-sm-7">
-                            <input id="cureDate" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="productionDate" class="col-sm-5 col-form-label text-right">Production Date</label>
-                        <div class="col-sm-7">
-                            <input id="productionDate" class="form-control">
-                        </div>
-                    </div>
 
             </form>
             
@@ -203,8 +94,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" crossorigin="anonymous"
         integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
     </script>
-	<script src="js/util.js?ver=1.019"></script>
-    <script src="js/main.js?ver=1.026"></script>
+	<script src="js/util.js?ver=1.020"></script>
+    <script src="js/main.js?ver=1.030"></script>
 
 </body>
 </html>
