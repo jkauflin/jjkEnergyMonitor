@@ -34,6 +34,9 @@ var storeId = 'storeid';
 var logArray = [];
 var initStoreRec = {
     id: storeId,                // unique identifier
+    pvkWhTotal: 9.25,
+    pvkwhTotalStart: '2019-12-01',
+    avgDailykWh: 2.00,
     desc: 'energy monitor'      // description
 };
 
