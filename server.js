@@ -42,6 +42,7 @@ Modification History
                 monitor sensors, so I went back to using an Arduino mega.
                 Installed Examples --> Firmata --> StandardFirmata through
                 the IDE
+2020-04-09 JJK  Got it working on a Pi Zero
 =============================================================================*/
 
 // Read environment variables from the .env file

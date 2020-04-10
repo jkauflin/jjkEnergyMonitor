@@ -18,6 +18,7 @@ Modification History
                 library and StandardFirmata on the Arduino
 2019-11-30 JJK  Got the old calculations and the send to a personal emoncms
                 working again (using static interval method that emoncms likes)
+2020-04-09 JJK  Got running on a Pi Zero
 =============================================================================*/
 var dateTime = require('node-datetime');
 const get = require('simple-get')
