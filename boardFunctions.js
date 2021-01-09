@@ -223,7 +223,7 @@ function logMetric() {
             } else {
                 //log("Server statusCode = "+res.statusCode) // 200 
                 //log("Server response = "+data) // Buffer('this is the server response') 
-                log("logMetric send, metricJSON = " + metricJSON);
+                //log("logMetric send, metricJSON = " + metricJSON);
             }
         });
     }
