@@ -66,7 +66,7 @@ const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
 var emoncmsUrl = "";
 var metricJSON = "";
 //var intervalSeconds = 20;
-var intervalSeconds = 5;
+var intervalSeconds = 10;
 var metricInterval = intervalSeconds * 1000;
 const minutesToMilliseconds = 60 * 1000;
 const secondsToMilliseconds = 1000;
@@ -257,8 +257,8 @@ function logMetric() {
             log("Error in logMetric send, metricJSON = " + metricJSON);
             log("err = " + err);
         } else {
-            log("Server statusCode = "+res.statusCode) // 200 
-            log("Server response = "+data) // Buffer('this is the server response') 
+            //log("Server statusCode = "+res.statusCode) // 200 
+            //log("Server response = "+data) // Buffer('this is the server response') 
             log("logMetric send, metricJSON = " + metricJSON);
         }
     });
