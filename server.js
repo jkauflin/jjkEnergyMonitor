@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2016,2019 John J Kauflin, All rights reserved. 
+(C) Copyright 2016,2019,2021 John J Kauflin, All rights reserved. 
 -----------------------------------------------------------------------------
 DESCRIPTION: Main nodejs server to run the web and control functions for
                 the solar energy monitor
@@ -43,6 +43,10 @@ Modification History
                 Installed Examples --> Firmata --> StandardFirmata through
                 the IDE
 2020-04-09 JJK  Got it working on a Pi Zero
+2021-01-09 JJK  Get working on Pi Zero and published to NPM
+    "express": "latest",
+    "json-fs-store": "^1.0.1",
+    "nodemon": "latest",
 =============================================================================*/
 
 // Read environment variables from the .env file
@@ -56,7 +60,7 @@ require('dotenv').config();
 //STORE_DIR=
 //IMAGES_DIR=
 
-var WEB_PORT = process.env.WEB_PORT;
+//var WEB_PORT = process.env.WEB_PORT;
 
 // General handler for any uncaught exceptions
 process.on('uncaughtException', function (e) {
@@ -68,6 +72,7 @@ process.on('uncaughtException', function (e) {
 });
 
 // Create a web server
+/*
 const http = require('http');
 const url = require('url');
 var dateTime = require('node-datetime');
@@ -88,6 +93,7 @@ app.use(function (err, req, res, next) {
 httpServer.listen(WEB_PORT,function() {
     console.log("Live at Port " + WEB_PORT + " - Let's rock!");
 });
+*/
 
 // Include the Arduino board functions
 var boardFunctions = require('./boardFunctions.js');
@@ -101,5 +107,4 @@ app.post('/UpdateConfig', function (req, res, next) {
     boardFunctions.updateConfig(req.body);
     res.send(JSON.stringify(boardFunctions.getStoreRec()));
 });
-
 */

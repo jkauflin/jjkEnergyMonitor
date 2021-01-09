@@ -1,6 +1,6 @@
 {
-  "name": "jjkenergymonitor",
-  "version": "2.0.0",
+  "name": "jjk-energy-monitor",
+  "version": "2.1.0",
   "description": "Monitor solar energy system",
   "main": "server.js",
   "scripts": {
@@ -14,13 +14,10 @@
     "url": "https://github.com/jkauflin/jjkEnergyMonitor.git"
   },
   "dependencies": {
-    "dotenv": "^4.0.0",
-    "express": "latest",
-    "get-json": "^1.0.0",
-    "johnny-five": "^1.4.0",
-    "json-fs-store": "^1.0.1",
-    "node-datetime": "^2.0.3",
-    "nodemon": "latest",
-    "simple-get": "^2.7.0"
+    "dotenv": "^8.2.0",
+    "get-json": "^1.0.1",
+    "johnny-five": "^2.0.0",
+    "node-datetime": "^2.1.2",
+    "simple-get": "^4.0.0"
   }
 }

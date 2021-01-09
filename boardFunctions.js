@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2019 John J Kauflin, All rights reserved. 
+(C) Copyright 2019,2021 John J Kauflin, All rights reserved. 
 -----------------------------------------------------------------------------
 DESCRIPTION: NodeJS module to handle board functions.  Communicates with
              the Arduino Mega board, and monitors the following voltage
@@ -22,7 +22,7 @@ Modification History
 =============================================================================*/
 var dateTime = require('node-datetime');
 const get = require('simple-get')
-const EventEmitter = require('events');
+//const EventEmitter = require('events');
 
 // Library to control the Arduino board
 var five = require("johnny-five");
@@ -30,6 +30,7 @@ var five = require("johnny-five");
 
 // Set up the configuration store and initial values
 //var store = require('json-fs-store')(process.env.STORE_DIR);
+/*
 var store = require('json-fs-store')("./");
 var storeId = 'storeid';
 var logArray = [];
@@ -58,41 +59,14 @@ store.load(storeId, function(err, inStoreRec){
         sr = inStoreRec;
     }
 });
-
-// Requires webcam utility - sudo apt-get install fswebcam
-/*
-var nodeWebcam = require( "node-webcam" );
-//Default options 
-var nodewebcamOptions = {
-  //Picture related 
-  width: 1280,
-  height: 720,
-  quality: 100,
-  //Delay to take shot 
-  delay: 0,
-  //Save shots in memory 
-  //saveShots: true,
-  saveShots: false,
-  // [jpeg, png] support varies 
-  // Webcam.OutputTypes 
-  output: "jpeg",
-  //Which camera to use 
-  //Use Webcam.list() for results 
-  //false for default device 
-  device: false,
-  // [location, buffer, base64] 
-  // Webcam.CallbackReturnTypes 
-  callbackReturn: "location",
-  //Logging 
-  verbose: false
-};
 */
 
 // Global variables
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
 var emoncmsUrl = "";
 var metricJSON = "";
-var intervalSeconds = 20;
+//var intervalSeconds = 20;
+var intervalSeconds = 5;
 var metricInterval = intervalSeconds * 1000;
 const minutesToMilliseconds = 60 * 1000;
 const secondsToMilliseconds = 1000;
@@ -283,9 +257,9 @@ function logMetric() {
             log("Error in logMetric send, metricJSON = " + metricJSON);
             log("err = " + err);
         } else {
-            //log("Server statusCode = "+res.statusCode) // 200 
-            //log("Server response = "+data) // Buffer('this is the server response') 
-            //log("logMetric send, metricJSON = " + metricJSON);
+            log("Server statusCode = "+res.statusCode) // 200 
+            log("Server response = "+data) // Buffer('this is the server response') 
+            log("logMetric send, metricJSON = " + metricJSON);
         }
     });
 
@@ -293,6 +267,7 @@ function logMetric() {
     setTimeout(logMetric, metricInterval);
 }
 
+/*
 function webControl(boardMessage) {
   //if (boardMessage.relay3 != null) {
   //  setRelay(HEAT,boardMessage.relay3);
@@ -325,19 +300,22 @@ function _saveStoreRec() {
         }
     });
 }
+*/
 
 function log(inStr) {
     var logStr = dateTime.create().format('Y-m-d H:M:S') + " " + inStr;
     console.log(logStr);
 }
 
+/*
 function updateConfig(inStoreRec) {
     sr = inStoreRec;
     log("updateConfig, targetTemperature = " + sr.targetTemperature);
     _saveStoreRec();
 }
+*/
 
 module.exports = {
-    getStoreRec,
-    updateConfig
+    //getStoreRec,
+    //updateConfig
 };
