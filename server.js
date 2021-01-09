@@ -43,24 +43,11 @@ Modification History
                 Installed Examples --> Firmata --> StandardFirmata through
                 the IDE
 2020-04-09 JJK  Got it working on a Pi Zero
-2021-01-09 JJK  Get working on Pi Zero and published to NPM
-    "express": "latest",
-    "json-fs-store": "^1.0.1",
-    "nodemon": "latest",
+2021-01-09 JJK  Get working on Pi Zero (removed web app part)
 =============================================================================*/
 
 // Read environment variables from the .env file
 require('dotenv').config();
-//NODE_ENV=
-//DEBUG=
-//HOST=
-//WEB_PORT=
-//WS_PORT=
-//EMONCMS_INPUT_URL=
-//STORE_DIR=
-//IMAGES_DIR=
-
-//var WEB_PORT = process.env.WEB_PORT;
 
 // General handler for any uncaught exceptions
 process.on('uncaughtException', function (e) {
@@ -71,40 +58,6 @@ process.on('uncaughtException', function (e) {
 	//process.exit(1);
 });
 
-// Create a web server
-/*
-const http = require('http');
-const url = require('url');
-var dateTime = require('node-datetime');
-const express = require('express');
-var app = express();
-var httpServer = http.createServer(app);
-
-app.use('/',express.static('public'));
-app.use(express.json());
-
-// jjk new
-app.use(function (err, req, res, next) {
-    console.error(err.stack)
-    res.status(500).send('Something broke!')
-})
-
-// Have the web server listen for requests
-httpServer.listen(WEB_PORT,function() {
-    console.log("Live at Port " + WEB_PORT + " - Let's rock!");
-});
-*/
-
 // Include the Arduino board functions
 var boardFunctions = require('./boardFunctions.js');
 
-/*
-app.get('/GetValues', function (req, res, next) {
-    res.send(JSON.stringify(boardFunctions.getStoreRec()));
-});
-
-app.post('/UpdateConfig', function (req, res, next) {
-    boardFunctions.updateConfig(req.body);
-    res.send(JSON.stringify(boardFunctions.getStoreRec()));
-});
-*/

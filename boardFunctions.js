@@ -18,48 +18,14 @@ Modification History
                 library and StandardFirmata on the Arduino
 2019-11-30 JJK  Got the old calculations and the send to a personal emoncms
                 working again (using static interval method that emoncms likes)
-2020-04-09 JJK  Got running on a Pi Zero
+2020-04-09 JJK  Got running on a Pi Zero, removed events and web functions
 =============================================================================*/
 var dateTime = require('node-datetime');
 const get = require('simple-get')
-//const EventEmitter = require('events');
 
 // Library to control the Arduino board
 var five = require("johnny-five");
 //var Raspi = require("raspi-io").RaspiIO;
-
-// Set up the configuration store and initial values
-//var store = require('json-fs-store')(process.env.STORE_DIR);
-/*
-var store = require('json-fs-store')("./");
-var storeId = 'storeid';
-var logArray = [];
-var initStoreRec = {
-    id: storeId,                // unique identifier
-    pvkWhTotal: 9.25,
-    pvkwhTotalStart: '2019-12-01',
-    avgDailykWh: 2.00,
-    desc: 'energy monitor'      // description
-};
-
-// Structure to hold current configuration values
-var sr = initStoreRec;
-
-// Get values from the application storage record
-store.load(storeId, function(err, inStoreRec){
-    if (err) {
-        // Create one if it does not exist (with initial values)
-        store.add(initStoreRec, function (err) {
-            if (err) {
-                throw err;
-            }
-        });
-    } else {
-        // Get current values from the store record
-        sr = inStoreRec;
-    }
-});
-*/
 
 // Global variables
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
@@ -246,76 +212,30 @@ function logMetric() {
     //log("logMetric, metricJSON = "+metricJSON);
 
     // Use this if we need to limit the send to between the hours of 6 and 20
-    //var date = new Date();
-    //var hours = date.getHours();
-    //if (hours > 6 && hours < 20) {
-    //}
-
-    // Call the simple GET function to make the web HTTP request
-    get.concat(emoncmsUrl, function (err, res, data) {
-        if (err) {
-            log("Error in logMetric send, metricJSON = " + metricJSON);
-            log("err = " + err);
-        } else {
-            //log("Server statusCode = "+res.statusCode) // 200 
-            //log("Server response = "+data) // Buffer('this is the server response') 
-            log("logMetric send, metricJSON = " + metricJSON);
-        }
-    });
+    var date = new Date();
+    var hours = date.getHours();
+    if (hours > 7 && hours < 20) {
+        // Call the simple GET function to make the web HTTP request
+        get.concat(emoncmsUrl, function (err, res, data) {
+            if (err) {
+                log("Error in logMetric send, metricJSON = " + metricJSON);
+                log("err = " + err);
+            } else {
+                //log("Server statusCode = "+res.statusCode) // 200 
+                //log("Server response = "+data) // Buffer('this is the server response') 
+                log("logMetric send, metricJSON = " + metricJSON);
+            }
+        });
+    }
 
     // Set the next time the function will run
     setTimeout(logMetric, metricInterval);
 }
-
-/*
-function webControl(boardMessage) {
-  //if (boardMessage.relay3 != null) {
-  //  setRelay(HEAT,boardMessage.relay3);
-  // }
-
-  // If send a new store rec, replace the existing and store it to disk
-  if (boardMessage.storeRec != null) {
-    sr = boardMessage.storeRec;
-    store.add(sr, function(err) {
-      if (err) {
-        //throw err;
-        console.log("Error updating store rec, err = "+err);
-      }
-    });
-  }
-
-} // function webControl(boardMessage) {
-
-function getStoreRec() {
-    return sr;
-}
-
-function _saveStoreRec() {
-    sr.id = storeId;
-    //sr.logList = logArray;
-    store.add(sr, function (err) {
-        if (err) {
-            //throw err;
-            log("Error updating store rec, err = " + err);
-        }
-    });
-}
-*/
 
 function log(inStr) {
     var logStr = dateTime.create().format('Y-m-d H:M:S') + " " + inStr;
     console.log(logStr);
 }
 
-/*
-function updateConfig(inStoreRec) {
-    sr = inStoreRec;
-    log("updateConfig, targetTemperature = " + sr.targetTemperature);
-    _saveStoreRec();
-}
-*/
-
 module.exports = {
-    //getStoreRec,
-    //updateConfig
 };
