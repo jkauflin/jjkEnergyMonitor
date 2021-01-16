@@ -12,6 +12,5 @@ yarn-debug.log*
 yarn-error.log*
 /.changelog
 .env
-package-lock.json
 store.json
 storeid.json

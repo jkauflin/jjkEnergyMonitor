@@ -1,0 +1,28 @@
+# Example file for setting up the app as a linux service
+#
+# Copy service file to /etc/systemd/system/EnergyMonitor.service
+#
+# Add the following aliases to .bashrc to set up and check the service
+#alias logs='journalctl --no-page -u EnergyMonitor'
+#alias enables='sudo systemctl enable EnergyMonitor.service'
+#alias disables='sudo systemctl disable EnergyMonitor.service'
+#alias stops='sudo systemctl stop EnergyMonitor.service'
+#alias starts='sudo systemctl start EnergyMonitor.service'
+#alias reloads='sudo systemctl daemon-reload'
+
+[Unit]
+Description=Energy Monitor service
+# Wait for the network before starting
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+# Set the user, directory, and node start command
+User=pi
+WorkingDirectory=/home/pi/jjkEnergyMonitor
+ExecStart=/usr/bin/node ./server.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
