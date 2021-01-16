@@ -21,7 +21,7 @@ Type=simple
 # Set the user, directory, and node start command
 User=pi
 WorkingDirectory=/home/pi/jjkEnergyMonitor
-ExecStart=/usr/bin/node ./server.js
+ExecStart=/usr/bin/npm start
 Restart=always
 
 [Install]
