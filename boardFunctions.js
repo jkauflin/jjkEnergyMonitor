@@ -218,8 +218,8 @@ function logMetric() {
         // Call the simple GET function to make the web HTTP request
         get.concat(emoncmsUrl, function (err, res, data) {
             if (err) {
-                log("Error in logMetric send, metricJSON = " + metricJSON);
-                log("err = " + err);
+                //log("Error in logMetric send, metricJSON = " + metricJSON);
+                //log("err = " + err);
             } else {
                 //log("Server statusCode = "+res.statusCode) // 200 
                 //log("Server response = "+data) // Buffer('this is the server response') 
