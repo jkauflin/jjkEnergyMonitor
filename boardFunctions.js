@@ -216,7 +216,7 @@ function logMetric() {
             var data = JSON.parse(retData);
             weather = data.weather[0].main;
             weatherTemp = data.main.temp;
-            log("weatherTemp = "+weatherTemp);
+            //log("weatherTemp = "+weatherTemp);
             weatherTempFeels = data.main.feels_like;
             weatherPressure = data.main.pressure;
             weatherHumidity = data.main.humidity;
@@ -251,7 +251,7 @@ function logMetric() {
         ",pvWatts:" + currWatts.toFixed(2) +
         "}";
     emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    log("logMetric, metricJSON = "+metricJSON);
+    //log("logMetric, metricJSON = "+metricJSON);
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
