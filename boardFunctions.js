@@ -138,7 +138,6 @@ board.on("ready", function () {
     setTimeout(logMetric, 10*secondsToMilliseconds);
 
     // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
-    /*
     this.wait(5*secondsToMilliseconds, function () {
         console.log("Initialize sensors");
         voltageSensor = new five.Sensor("A0");
@@ -197,7 +196,6 @@ board.on("ready", function () {
             }
         });
     });
-    */
 
     log("End of board.on (initialize) event");
 
@@ -215,7 +213,7 @@ function logMetric() {
             log("err = " + err);
         } else {
             //log("Server statusCode = "+res.statusCode) // 200 
-            log("Server response = "+data) // Buffer('this is the server response')
+            //log("Server response = "+retData) // Buffer('this is the server response')
             var data = JSON.parse(retData);
             weather = data.weather[0].main;
             log("weather = "+weather);
