@@ -238,11 +238,11 @@ function logMetric() {
         ",pvAmps:" + currAmperage.toFixed(2) +
         ",pvWatts:" + currWatts.toFixed(2) +
         ",weather:" + weather +
-        ",weatherTemp:" + weatherTemp +
-        ",weatherFeels:" + weatherTempFeels +
-        ",weatherPressure:" + weatherPressure +
-        ",weatherHumidity:" + weatherHumidity +
-        ",weatherDateTime:" + weatherDateTime +
+        ",weatherTemp:" + weatherTemp.toString(); +
+        ",weatherFeels:" + weatherTempFeels.toString(); +
+        ",weatherPressure:" + weatherPressure.toString(); +
+        ",weatherHumidity:" + weatherHumidity.toString(); +
+        ",weatherDateTime:" + weatherDateTime.toString(); +
         "}";
     emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
     log("logMetric, metricJSON = "+metricJSON);
