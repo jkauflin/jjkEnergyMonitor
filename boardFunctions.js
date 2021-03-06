@@ -216,6 +216,7 @@ function logMetric() {
             var data = JSON.parse(retData);
             weather = data.weather[0].main;
             weatherTemp = data.main.temp;
+            log("weatherTemp = "+weatherTemp);
             weatherTempFeels = data.main.feels_like;
             weatherPressure = data.main.pressure;
             weatherHumidity = data.main.humidity;
