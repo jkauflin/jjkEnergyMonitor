@@ -234,6 +234,7 @@ function logMetric() {
     currWatts = currVoltage * currAmperage;
 
     // Construct the JSON structure and URL to send values to the emoncms web site
+    /*
     metricJSON = "{" + "pvVolts:" + currVoltage.toFixed(2) +
         ",pvAmps:" + currAmperage.toFixed(2) +
         ",pvWatts:" + currWatts.toFixed(2) +
@@ -243,6 +244,11 @@ function logMetric() {
         ",weatherPressure:" + weatherPressure.toString() +
         ",weatherHumidity:" + weatherHumidity.toString() +
         ",weatherDateTime:" + weatherDateTime.toString() +
+        "}";
+    */
+    metricJSON = "{" + "pvVolts:" + currVoltage.toFixed(2) +
+        ",pvAmps:" + currAmperage.toFixed(2) +
+        ",pvWatts:" + currWatts.toFixed(2) +
         "}";
     emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
     log("logMetric, metricJSON = "+metricJSON);
