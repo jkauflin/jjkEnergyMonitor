@@ -138,6 +138,7 @@ board.on("ready", function () {
     setTimeout(logMetric, 10*secondsToMilliseconds);
 
     // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
+    /*
     this.wait(5*secondsToMilliseconds, function () {
         console.log("Initialize sensors");
         voltageSensor = new five.Sensor("A0");
@@ -196,6 +197,7 @@ board.on("ready", function () {
             }
         });
     });
+    */
    
     log("End of board.on (initialize) event");
 
