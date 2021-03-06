@@ -19,6 +19,8 @@ Modification History
 2019-11-30 JJK  Got the old calculations and the send to a personal emoncms
                 working again (using static interval method that emoncms likes)
 2020-04-09 JJK  Got running on a Pi Zero, removed events and web functions
+2021-03-05 JJK  Adding a call to weather API to get current weather 
+                conditions to add to feed info
 =============================================================================*/
 var dateTime = require('node-datetime');
 const get = require('simple-get')
@@ -29,6 +31,7 @@ var five = require("johnny-five");
 
 // Global variables
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
+const WEATHER_URL = process.env.WEATHER_URL;
 var emoncmsUrl = "";
 var metricJSON = "";
 //var intervalSeconds = 20;
@@ -42,6 +45,13 @@ var currVoltage = 0;
 var ampSensor = null;
 var currAmperage = 0;
 var currWatts = 0;
+
+var weather = "Clear";
+var weatherTemp = 0;
+var weatherTempFeels = 0;
+var weatherPressure = 0;
+var weatherHumidity = 0;
+var weatherDateTime = 0;
 
 const analogPinMax = 1023.0;
 const arduinoPower = 5.0;
@@ -194,6 +204,24 @@ board.on("ready", function () {
 
 // Send metric values to a website
 function logMetric() {
+
+    // Get the current weather settings
+    // Call the simple GET function to make the web HTTP request
+    get.concat(process.env.WEATHER_URL, function (err, res, data) {
+        if (err) {
+            log("err = " + err);
+        } else {
+            //log("Server statusCode = "+res.statusCode) // 200 
+            //log("Server response = "+data) // Buffer('this is the server response') 
+            weather = data.weather[0].main;
+            weatherTemp = data.main.temp;
+            weatherTempFeels = data.main.feels_like;
+            weatherPressure = data.main.pressure;
+            weatherHumidity = data.main.humidity;
+            weatherDateTime = data.dt;
+        }
+    });
+
     // Just set low values to zero
     if (currVoltage < 2.0) {
         currVoltage = 0.0;
@@ -207,6 +235,12 @@ function logMetric() {
     metricJSON = "{" + "pvVolts:" + currVoltage.toFixed(2) +
         ",pvAmps:" + currAmperage.toFixed(2) +
         ",pvWatts:" + currWatts.toFixed(2) +
+        ",weather:" + weather +
+        ",weatherTemp:" + weatherTemp +
+        ",weatherFeels:" + weatherTempFeels +
+        ",weatherPressure:" + weatherPressure +
+        ",weatherHumidity:" + weatherHumidity +
+        ",weatherDateTime:" + weatherDateTime +
         "}";
     emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
     //log("logMetric, metricJSON = "+metricJSON);
