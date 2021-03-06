@@ -198,7 +198,7 @@ board.on("ready", function () {
         });
     });
     */
-   
+
     log("End of board.on (initialize) event");
 
 }); // board.on("ready", function() {
@@ -207,6 +207,7 @@ board.on("ready", function () {
 // Send metric values to a website
 function logMetric() {
 
+    log("in logMetric");
     // Get the current weather settings
     // Call the simple GET function to make the web HTTP request
     get.concat(process.env.WEATHER_URL, function (err, res, retData) {
@@ -214,9 +215,10 @@ function logMetric() {
             log("err = " + err);
         } else {
             //log("Server statusCode = "+res.statusCode) // 200 
-            //log("Server response = "+data) // Buffer('this is the server response')
+            log("Server response = "+data) // Buffer('this is the server response')
             var data = JSON.parse(retData);
             weather = data.weather[0].main;
+            log("weather = "+weather);
             weatherTemp = data.main.temp;
             weatherTempFeels = data.main.feels_like;
             weatherPressure = data.main.pressure;
