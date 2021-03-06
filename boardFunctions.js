@@ -205,7 +205,6 @@ board.on("ready", function () {
 // Send metric values to a website
 function logMetric() {
 
-    log("in logMetric");
     // Get the current weather settings
     // Call the simple GET function to make the web HTTP request
     get.concat(process.env.WEATHER_URL, function (err, res, retData) {
@@ -216,7 +215,6 @@ function logMetric() {
             //log("Server response = "+retData) // Buffer('this is the server response')
             var data = JSON.parse(retData);
             weather = data.weather[0].main;
-            log("weather = "+weather);
             weatherTemp = data.main.temp;
             weatherTempFeels = data.main.feels_like;
             weatherPressure = data.main.pressure;
@@ -246,7 +244,7 @@ function logMetric() {
         ",weatherDateTime:" + weatherDateTime +
         "}";
     emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    //log("logMetric, metricJSON = "+metricJSON);
+    log("logMetric, metricJSON = "+metricJSON);
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
