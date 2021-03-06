@@ -213,6 +213,7 @@ function logMetric() {
         } else {
             //log("Server statusCode = "+res.statusCode) // 200 
             //log("Server response = "+data) // Buffer('this is the server response') 
+            log("Server response = "+data);
             weather = data.weather[0].main;
             weatherTemp = data.main.temp;
             weatherTempFeels = data.main.feels_like;
