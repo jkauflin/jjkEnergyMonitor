@@ -21,9 +21,10 @@ Modification History
 2020-04-09 JJK  Got running on a Pi Zero, removed events and web functions
 2021-03-05 JJK  Adding a call to weather API to get current weather 
                 conditions to add to feed info
+2021-03-07 JJK  Updated to use fetch instead of get for HTTP calls
 =============================================================================*/
 var dateTime = require('node-datetime');
-const get = require('simple-get')
+const fetch = require('node-fetch');
 
 // Library to control the Arduino board
 var five = require("johnny-five");
@@ -33,10 +34,11 @@ var five = require("johnny-five");
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
 const WEATHER_URL = process.env.WEATHER_URL;
 var emoncmsUrl = "";
-var metricJSON = "";
+//var metricJSON = "";
 //var intervalSeconds = 20;
 var intervalSeconds = 15;
 var metricInterval = intervalSeconds * 1000;
+var weatherInterval = (intervalSeconds*2) * 1000;
 const minutesToMilliseconds = 60 * 1000;
 const secondsToMilliseconds = 1000;
 
@@ -46,12 +48,17 @@ var ampSensor = null;
 var currAmperage = 0;
 var currWatts = 0;
 
-var weather = "Clear";
-var weatherTemp = 0;
-var weatherTempFeels = 0;
-var weatherPressure = 0;
-var weatherHumidity = 0;
-var weatherDateTime = 0;
+var metricData = {
+    pvVolts: 0,
+    pvAmps: 0,
+    pvWatts: 0,
+    weather: 0,
+    weatherTemp: 0,
+    weatherFeels: 0,
+    weatherPressure: 0,
+    weatherHumidity: 0,
+    weatherDateTime: 0,
+}
 
 const analogPinMax = 1023.0;
 const arduinoPower = 5.0;
@@ -134,6 +141,8 @@ board.on("ready", function () {
         //cleanup actions
     });
 
+    // Start fetching weather in 2 seconds
+    setTimeout(fetchWeather, 2000);
     // Start sending metrics 10 seconds after starting (so things are calm and value arrays are full)
     setTimeout(logMetric, 10*secondsToMilliseconds);
 
@@ -204,28 +213,6 @@ board.on("ready", function () {
 
 // Send metric values to a website
 function logMetric() {
-
-    // Get the current weather settings
-    // Call the simple GET function to make the web HTTP request
-    /*
-    get.concat(process.env.WEATHER_URL, function (err, res, retData) {
-        if (err) {
-            log("err = " + err);
-        } else {
-            //log("Server statusCode = "+res.statusCode) // 200 
-            //log("Server response = "+retData) // Buffer('this is the server response')
-            var data = JSON.parse(retData);
-            weather = data.weather[0].main;
-            weatherTemp = data.main.temp;
-            weatherTempFeels = data.main.feels_like;
-            weatherPressure = data.main.pressure;
-            weatherHumidity = data.main.humidity;
-            weatherDateTime = data.dt;
-            log("weather = "+weather+", weatherTemp = "+weatherTemp);
-        }
-    });
-    */
-   
     // Just set low values to zero
     if (currVoltage < 2.0) {
         currVoltage = 0.0;
@@ -235,32 +222,40 @@ function logMetric() {
     // Calculate current PV watts from voltage and amps
     currWatts = currVoltage * currAmperage;
 
-    // Construct the JSON structure and URL to send values to the emoncms web site
-    /*
-    metricJSON = "{" + "pvVolts:" + currVoltage.toFixed(2) +
-        ",pvAmps:" + currAmperage.toFixed(2) +
-        ",pvWatts:" + currWatts.toFixed(2) +
-        ",weather:" + weather +
-        ",weatherTemp:" + weatherTemp.toString() +
-        ",weatherFeels:" + weatherTempFeels.toString() +
-        ",weatherPressure:" + weatherPressure.toString() +
-        ",weatherHumidity:" + weatherHumidity.toString() +
-        ",weatherDateTime:" + weatherDateTime.toString() +
-        "}";
-    */
-    metricJSON = "{" + "pvVolts:" + currVoltage.toFixed(2) +
-        ",pvAmps:" + currAmperage.toFixed(2) +
-        ",pvWatts:" + currWatts.toFixed(2) +
-        "}";
+    metricData.pvVolts = currVoltage.toFixed(2);
+    metricData.pvAmps = currAmperage.toFixed(2);
+    metricData.pvWatts = currWatts.toFixed(2);
     
-    emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
+    //emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
     //log("logMetric, metricJSON = "+metricJSON);
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
     if (hours > 7 && hours < 20) {
+
+        emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
+        fetch(emoncmsUrl)
+            .then(checkResponseStatus)
+            .then(res => res.json())
+            //.then(json => console.log(json))
+            .catch(err => log(err));
+
+                /*
+    fetch(emoncmsUrl {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(metricData)
+        })
+      .then(res => res.json())
+      .then(data => console.log(data))
+      .catch(err => console.log(err));
+        */
+
         // Call the simple GET function to make the web HTTP request
+        /*
         get.concat(emoncmsUrl, function (err, res, data) {
             if (err) {
                 //log("Error in logMetric send, metricJSON = " + metricJSON);
@@ -271,10 +266,37 @@ function logMetric() {
                 //log("logMetric send, metricJSON = " + metricJSON);
             }
         });
+        */
     }
 
     // Set the next time the function will run
     setTimeout(logMetric, metricInterval);
+}
+
+function fetchWeather() {
+    fetch(WEATHER_URL)
+        .then(checkResponseStatus)
+        .then(res => res.json())
+        .then(json => { 
+            metricData.weather = json.weather[0].id;
+            metricData.weatherTemp = json.main.temp;
+            metricData.weatherFeels = json.main.feels_like;
+            metricData.weatherPressure = json.main.pressure;
+            metricData.weatherHumidity = json.main.humidity;
+            metricData.weatherDateTime = json.dt;
+        })
+        .catch(err => console.log(err));
+
+    setTimeout(fetchWeather, weatherInterval);
+}
+
+function checkResponseStatus(res) {
+    if(res.ok){
+        return res
+    } else {
+        //throw new Error(`The HTTP status of the reponse: ${res.status} (${res.statusText})`);
+        log(`The HTTP status of the reponse: ${res.status} (${res.statusText})`);
+    }
 }
 
 function log(inStr) {
