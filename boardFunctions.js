@@ -253,20 +253,6 @@ function logMetric() {
       .then(data => console.log(data))
       .catch(err => console.log(err));
         */
-
-        // Call the simple GET function to make the web HTTP request
-        /*
-        get.concat(emoncmsUrl, function (err, res, data) {
-            if (err) {
-                //log("Error in logMetric send, metricJSON = " + metricJSON);
-                //log("err = " + err);
-            } else {
-                //log("Server statusCode = "+res.statusCode) // 200 
-                //log("Server response = "+data) // Buffer('this is the server response') 
-                //log("logMetric send, metricJSON = " + metricJSON);
-            }
-        });
-        */
     }
 
     // Set the next time the function will run
