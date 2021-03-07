@@ -260,18 +260,23 @@ function logMetric() {
 }
 
 function fetchWeather() {
-    fetch(WEATHER_URL)
-        .then(checkResponseStatus)
-        .then(res => res.json())
-        .then(json => { 
-            metricData.weather = json.weather[0].id;
-            metricData.weatherTemp = json.main.temp;
-            metricData.weatherFeels = json.main.feels_like;
-            metricData.weatherPressure = json.main.pressure;
-            metricData.weatherHumidity = json.main.humidity;
-            metricData.weatherDateTime = json.dt;
-        })
-        .catch(err => console.log(err));
+    // Use this if we need to limit the send to between the hours of 6 and 20
+    var date = new Date();
+    var hours = date.getHours();
+    if (hours > 7 && hours < 20) {
+        fetch(WEATHER_URL)
+            .then(checkResponseStatus)
+            .then(res => res.json())
+            .then(json => {
+                metricData.weather = json.weather[0].id;
+                metricData.weatherTemp = json.main.temp;
+                metricData.weatherFeels = json.main.feels_like;
+                metricData.weatherPressure = json.main.pressure;
+                metricData.weatherHumidity = json.main.humidity;
+                metricData.weatherDateTime = json.dt;
+            })
+            .catch(err => console.log(err));
+    }
 
     setTimeout(fetchWeather, weatherInterval);
 }
