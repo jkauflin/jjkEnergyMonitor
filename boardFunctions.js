@@ -216,11 +216,11 @@ function logMetric() {
             var data = JSON.parse(retData);
             weather = data.weather[0].main;
             weatherTemp = data.main.temp;
-            //log("weatherTemp = "+weatherTemp);
             weatherTempFeels = data.main.feels_like;
             weatherPressure = data.main.pressure;
             weatherHumidity = data.main.humidity;
             weatherDateTime = data.dt;
+            log("weather = "+weather+", weatherTemp = "+weatherTemp);
         }
     });
 
@@ -251,7 +251,7 @@ function logMetric() {
         ",pvWatts:" + currWatts.toFixed(2) +
         "}";
     emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    //log("logMetric, metricJSON = "+metricJSON);
+    log("logMetric, metricJSON = "+metricJSON);
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
@@ -260,10 +260,10 @@ function logMetric() {
         // Call the simple GET function to make the web HTTP request
         get.concat(emoncmsUrl, function (err, res, data) {
             if (err) {
-                //log("Error in logMetric send, metricJSON = " + metricJSON);
-                //log("err = " + err);
+                log("Error in logMetric send, metricJSON = " + metricJSON);
+                log("err = " + err);
             } else {
-                //log("Server statusCode = "+res.statusCode) // 200 
+                log("Server statusCode = "+res.statusCode) // 200 
                 //log("Server response = "+data) // Buffer('this is the server response') 
                 //log("logMetric send, metricJSON = " + metricJSON);
             }
