@@ -275,7 +275,7 @@ function fetchWeather() {
                 metricData.weatherHumidity = json.main.humidity;
                 metricData.weatherDateTime = json.dt;
             })
-            .catch(err => console.log(err));
+            .catch(err => log(err));
     }
 
     setTimeout(fetchWeather, weatherInterval);
