@@ -232,7 +232,7 @@ function logMetric() {
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
-    if (hours > 7 && hours < 20) {
+    if (hours > 6 && hours < 20) {
 
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
         fetch(emoncmsUrl)
@@ -263,7 +263,7 @@ function fetchWeather() {
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
-    if (hours > 7 && hours < 20) {
+    if (hours > 6 && hours < 20) {
         fetch(WEATHER_URL)
             .then(checkResponseStatus)
             .then(res => res.json())
