@@ -22,6 +22,7 @@ Modification History
 2021-03-05 JJK  Adding a call to weather API to get current weather 
                 conditions to add to feed info
 2021-03-07 JJK  Updated to use fetch instead of get for HTTP calls
+2021-09-18 JJK  Get working at new house (same setup, outside)
 =============================================================================*/
 var dateTime = require('node-datetime');
 const fetch = require('node-fetch');

@@ -44,6 +44,7 @@ Modification History
                 the IDE
 2020-04-09 JJK  Got it working on a Pi Zero
 2021-01-09 JJK  Get working on Pi Zero (removed web app part)
+2021-09-18 JJK  Get working at new house (same setup, but outside)
 =============================================================================*/
 
 // Read environment variables from the .env file
