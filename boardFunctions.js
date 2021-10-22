@@ -23,6 +23,8 @@ Modification History
                 conditions to add to feed info
 2021-03-07 JJK  Updated to use fetch instead of get for HTTP calls
 2021-09-18 JJK  Get working at new house (same setup, outside)
+2021-10-22 JJK  Added currWattsOut for an estimated value of the watts
+                being produced (post inverter)
 =============================================================================*/
 var dateTime = require('node-datetime');
 const fetch = require('node-fetch');
@@ -48,11 +50,13 @@ var currVoltage = 0;
 var ampSensor = null;
 var currAmperage = 0;
 var currWatts = 0;
+var currWattsOut = 0;
 
 var metricData = {
     pvVolts: 0,
     pvAmps: 0,
     pvWatts: 0,
+    pvWattsOut: 0,
     weather: 0,
     weatherTemp: 0,
     weatherFeels: 0,
@@ -222,11 +226,13 @@ function logMetric() {
 
     // Calculate current PV watts from voltage and amps
     currWatts = currVoltage * currAmperage;
+    currWattsOut = currWatts * 0.87;
 
     metricData.pvVolts = currVoltage.toFixed(2);
     metricData.pvAmps = currAmperage.toFixed(2);
     metricData.pvWatts = currWatts.toFixed(2);
-    
+    metricData.pvWattsOut = currWattsOut.toFixed(2);
+
     //emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
     //log("logMetric, metricJSON = "+JSON.stringify(metricData));
 
