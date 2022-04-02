@@ -25,9 +25,11 @@ Modification History
 2021-09-18 JJK  Get working at new house (same setup, outside)
 2021-10-22 JJK  Added currWattsOut for an estimated value of the watts
                 being produced (post inverter)
+2022-04-02 JJK  Updated to use newest version of node-fetch
 =============================================================================*/
 var dateTime = require('node-datetime');
-const fetch = require('node-fetch');
+//const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 // Library to control the Arduino board
 var five = require("johnny-five");
