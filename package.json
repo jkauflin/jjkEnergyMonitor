@@ -17,6 +17,6 @@
     "dotenv": "^8.6.0",
     "johnny-five": "^2.1.0",
     "node-datetime": "^2.1.2",
-    "node-fetch": "^3.2.3"
+    "node-fetch": "^2.6.5"
   }
 }

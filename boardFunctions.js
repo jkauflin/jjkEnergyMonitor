@@ -28,8 +28,8 @@ Modification History
 2022-04-02 JJK  Updated to use newest version of node-fetch
 =============================================================================*/
 var dateTime = require('node-datetime');
-//const fetch = require('node-fetch');
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
+//import fetch from 'node-fetch';
 
 // Library to control the Arduino board
 var five = require("johnny-five");
