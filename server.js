@@ -45,6 +45,7 @@ Modification History
 2020-04-09 JJK  Got it working on a Pi Zero
 2021-01-09 JJK  Get working on Pi Zero (removed web app part)
 2021-09-18 JJK  Get working at new house (same setup, but outside)
+2022-04-02 JJK  Updated packages to get web calls working again
 =============================================================================*/
 
 // Read environment variables from the .env file
