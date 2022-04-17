@@ -26,8 +26,11 @@ Modification History
 2021-10-22 JJK  Added currWattsOut for an estimated value of the watts
                 being produced (post inverter)
 2022-04-02 JJK  Updated to use newest version of node-fetch
+                >>>>> hold off for now, v3 has breaking changes for ES6
+                went back to v2 for now
+2022-04-17 JJK  Working on error handling - implementing a overall try/catch
+                for the main executable code
 =============================================================================*/
-var dateTime = require('node-datetime');
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
 
@@ -99,17 +102,6 @@ for (var i = 0; i < numReadings; i++) {
 }
 var arrayFull1 = false;
 
-// Create Johnny-Five board object
-// When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
-// be sure to shut the REPL off!
-/*
-var board = new five.Board({
-    repl: false,
-    debug: false,
-    io: new Raspi()
-//    timeout: 12000
-});
-*/
 
 // Create Johnny-Five board object
 // When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
@@ -123,100 +115,107 @@ var board = new five.Board({
 // State variables
 var boardReady = false;
 
-board.on("error", function () {
-    log("*** Error in Board ***");
-    boardReady = false;
-}); // board.on("error", function() {
-
-log("===== Starting board initialization =====");
-//-------------------------------------------------------------------------------------------------------
-// When the board is ready, create and intialize global component objects (to be used by functions)
-//-------------------------------------------------------------------------------------------------------
-// When the board is ready, create and intialize global component objects (to be used by functions)
-board.on("ready", function () {
-    log("*** board ready ***");
-    boardReady = true;
-
-    // If the board is exiting, execute cleanup actions
-    this.on("exit", function () {
-        log("on EXIT");
-        //cleanup actions
-    });
-    // Handle a termination signal
-    process.on('SIGTERM', function () {
-        log('on SIGTERM');
-        //cleanup actions
-    });
-
-    // Start fetching weather in 2 seconds
-    setTimeout(fetchWeather, 2000);
-    // Start sending metrics 10 seconds after starting (so things are calm and value arrays are full)
-    setTimeout(logMetric, 10*secondsToMilliseconds);
-
-    // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
-    this.wait(5*secondsToMilliseconds, function () {
-        console.log("Initialize sensors");
-        voltageSensor = new five.Sensor("A0");
-        ampSensor = new five.Sensor("A1");
-
-        voltageSensor.on("change", function () {
-            // subtract the last reading:
-            totalA0 = totalA0 - readingsA0[indexA0];
-            readingsA0[indexA0] = this.value;
-            // add the reading to the total:
-            totalA0 = totalA0 + readingsA0[indexA0];
-            // advance to the next position in the array: 
-            indexA0 = indexA0 + 1;
-            // if we're at the end of the array...
-            if (indexA0 >= numReadings) {
-                // ...wrap around to the beginning:
-                indexA0 = 0;
-                arrayFull = true;
-            }
-            // calculate the average when the array is full
-            if (arrayFull) {
-                averageA0 = totalA0 / numReadings;
-                // Calculate the current voltage
-                // currVoltage = ((averageA0 / analogPinMax) * arduinoPower) / (res2 / (res1 + res2));
-                // 11/30/2019 JJK - Adjust to -30
-                currVoltage = ((averageA0 / (analogPinMax - 30)) * arduinoPower) / (res2 / (res1 + res2));
-            }
+try {
+    board.on("error", function () {
+        log("*** Error in Board ***");
+        boardReady = false;
+    }); // board.on("error", function() {
+    
+    log("===== Starting board initialization =====");
+    //-------------------------------------------------------------------------------------------------------
+    // When the board is ready, create and intialize global component objects (to be used by functions)
+    //-------------------------------------------------------------------------------------------------------
+    // When the board is ready, create and intialize global component objects (to be used by functions)
+    board.on("ready", function () {
+        log("*** board ready ***");
+        boardReady = true;
+    
+        // If the board is exiting, execute cleanup actions
+        this.on("exit", function () {
+            log("on EXIT");
+            //cleanup actions
         });
-
-        ampSensor.on("change", function () {
-            // subtract the last reading:
-            totalA1 = totalA1 - readingsA1[indexA1];
-            readingsA1[indexA1] = this.value;
-            // add the reading to the total:
-            totalA1 = totalA1 + readingsA1[indexA1];
-            // advance to the next position in the array: 
-            indexA1 = indexA1 + 1;
-            // if we're at the end of the array...
-            if (indexA1 >= numReadings) {
-                // ...wrap around to the beginning:
-                indexA1 = 0;
-                arrayFull1 = true;
-            }
-            // calculate the average:
-            if (arrayFull1) {
-                averageA1 = totalA1 / numReadings;
-                //tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
-                //tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
-                // 11/30/2019 JJK - Adjustment to 5006
-                tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
-                currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
-                //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
-                //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
-                //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
-                //const ACSoffset = 2500; 
-            }
+        // Handle a termination signal
+        process.on('SIGTERM', function () {
+            log('on SIGTERM');
+            //cleanup actions
         });
-    });
+    
+        // Start fetching weather in 2 seconds
+        setTimeout(fetchWeather, 2000);
+        // Start sending metrics 10 seconds after starting (so things are calm and value arrays are full)
+        setTimeout(logMetric, 10*secondsToMilliseconds);
+    
+        // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
+        this.wait(5*secondsToMilliseconds, function () {
+            console.log("Initialize sensors");
+            voltageSensor = new five.Sensor("A0");
+            ampSensor = new five.Sensor("A1");
+    
+            voltageSensor.on("change", function () {
+                // subtract the last reading:
+                totalA0 = totalA0 - readingsA0[indexA0];
+                readingsA0[indexA0] = this.value;
+                // add the reading to the total:
+                totalA0 = totalA0 + readingsA0[indexA0];
+                // advance to the next position in the array: 
+                indexA0 = indexA0 + 1;
+                // if we're at the end of the array...
+                if (indexA0 >= numReadings) {
+                    // ...wrap around to the beginning:
+                    indexA0 = 0;
+                    arrayFull = true;
+                }
+                // calculate the average when the array is full
+                if (arrayFull) {
+                    averageA0 = totalA0 / numReadings;
+                    // Calculate the current voltage
+                    // currVoltage = ((averageA0 / analogPinMax) * arduinoPower) / (res2 / (res1 + res2));
+                    // 11/30/2019 JJK - Adjust to -30
+                    currVoltage = ((averageA0 / (analogPinMax - 30)) * arduinoPower) / (res2 / (res1 + res2));
+                }
+            });
+    
+            ampSensor.on("change", function () {
+                // subtract the last reading:
+                totalA1 = totalA1 - readingsA1[indexA1];
+                readingsA1[indexA1] = this.value;
+                // add the reading to the total:
+                totalA1 = totalA1 + readingsA1[indexA1];
+                // advance to the next position in the array: 
+                indexA1 = indexA1 + 1;
+                // if we're at the end of the array...
+                if (indexA1 >= numReadings) {
+                    // ...wrap around to the beginning:
+                    indexA1 = 0;
+                    arrayFull1 = true;
+                }
+                // calculate the average:
+                if (arrayFull1) {
+                    averageA1 = totalA1 / numReadings;
+                    //tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
+                    //tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
+                    // 11/30/2019 JJK - Adjustment to 5006
+                    tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
+                    currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
+                    //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
+                    //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
+                    //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
+                    //const ACSoffset = 2500; 
+                }
+            });
+        });
+    
+        log("End of board.on (initialize) event");
+    
+    }); // board.on("ready", function() {
 
-    log("End of board.on (initialize) event");
-
-}); // board.on("ready", function() {
-
+} catch (err) {
+    log('Error in main initialization, err = '+err);
+    console.error(err.stack);
+} finally {
+    // turn things off?
+}
 
 // Send metric values to a website
 function logMetric() {
@@ -292,16 +291,31 @@ function fetchWeather() {
 
 function checkResponseStatus(res) {
     if(res.ok){
+        //log(`Fetch reponse is OK: ${res.status} (${res.statusText})`);
         return res
     } else {
         //throw new Error(`The HTTP status of the reponse: ${res.status} (${res.statusText})`);
-        log(`The HTTP status of the reponse: ${res.status} (${res.statusText})`);
+        log(`Fetch reponse is NOT OK: ${res.status} (${res.statusText})`);
     }
 }
 
 function log(inStr) {
-    var logStr = dateTime.create().format('Y-m-d H:M:S') + " " + inStr;
-    console.log(logStr);
+    //var logStr = dateTime.create().format('Y-m-d H:M:S') + " " + inStr;
+    var td = new Date();
+
+    var tempMonth = td.getMonth() + 1;
+    if (td.getMonth() < 9) {
+        tempMonth = '0' + (td.getMonth() + 1);
+    }
+    var tempDay = td.getDate();
+    if (td.getDate() < 10) {
+        tempDay = '0' + td.getDate();
+    }
+    var formattedDate = td.getFullYear() + '-' + tempMonth + '-' + tempDay;
+
+    //var dateStr = `${td.toDateString()} ${td.getHours()}:${td.getMinutes()}:${td.getSeconds()}.${td.getMilliseconds()}`;
+    var dateStr = `${formattedDate} ${td.getHours()}:${td.getMinutes()}:${td.getSeconds()}.${td.getMilliseconds()}`;
+    console.log(dateStr + " " + inStr);
 }
 
 module.exports = {
