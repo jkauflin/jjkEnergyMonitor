@@ -240,9 +240,10 @@ function logMetric() {
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
-    if (hours > 6 && hours < 22) {
+    //if (hours > 6 && hours < 22) {
 
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
+        log(`log metricData = ${JSON.stringify(metricData)}`);
         fetch(emoncmsUrl)
             .then(checkResponseStatus)
             .then(res => res.json())
@@ -261,7 +262,7 @@ function logMetric() {
       .then(data => console.log(data))
       .catch(err => console.log(err));
         */
-    }
+    //}
 
     // Set the next time the function will run
     setTimeout(logMetric, metricInterval);
