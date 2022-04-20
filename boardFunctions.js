@@ -228,12 +228,14 @@ function logMetric() {
     // Calculate current PV watts from voltage and amps
     currWatts = currVoltage * currAmperage;
 
-    currWattsOut = currWatts * 0.88;
     // Get estimate of the power from the new grid-tie inverter
     // 2 panels which is 1/4 of the 8 panels in the first grid-tie inverter
-    var estimatedSecondInverterWatts = currWattsOut * 0.25;
+    var estimatedSecondInverterWatts = currWatts * 0.25;
     // Add estimated power to the watts out total
-    currWattsOut = currWattsOut + estimatedSecondInverterWatts;
+    currWatts = currWatts + estimatedSecondInverterWatts;
+
+    // Get an estimate of the post-inverter watts (losing say 12%)
+    currWattsOut = currWatts * 0.88;
 
     metricData.pvVolts = currVoltage.toFixed(2);
     metricData.pvAmps = currAmperage.toFixed(2);
