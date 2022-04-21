@@ -78,7 +78,9 @@ const res2 = 10000.0;
 const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
 const ACSoffset = 2500;
 var tempVoltage = 0;
-log("DC VOLTMETER Maximum Voltage: "+(arduinoPower / (res2 / (res1 + res2))));
+// log("DC VOLTMETER Maximum Voltage: "+(arduinoPower / (res2 / (res1 + res2))));
+// DC VOLTMETER Maximum Voltage: 170
+
 
 // Variables to hold sensor values
 var numReadings = 10; // Total number of readings to average
@@ -144,7 +146,7 @@ try {
         // Start fetching weather in 2 seconds
         setTimeout(fetchWeather, 2000);
         // Start sending metrics 10 seconds after starting (so things are calm and value arrays are full)
-        setTimeout(logMetric, 10*secondsToMilliseconds);
+        setTimeout(logMetric, 20*secondsToMilliseconds);
     
         // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
         this.wait(5*secondsToMilliseconds, function () {
@@ -249,7 +251,6 @@ function logMetric() {
     var date = new Date();
     var hours = date.getHours();
     if (hours > 6 && hours < 20) {
-
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
         //log(`log metricData = ${JSON.stringify(metricData)}`);
         fetch(emoncmsUrl)
@@ -257,19 +258,6 @@ function logMetric() {
             .then(res => res.json())
             //.then(json => console.log(json))
             .catch(err => log(err));
-
-                /*
-    fetch(emoncmsUrl {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(metricData)
-        })
-      .then(res => res.json())
-      .then(data => console.log(data))
-      .catch(err => console.log(err));
-        */
     }
 
     // Set the next time the function will run
