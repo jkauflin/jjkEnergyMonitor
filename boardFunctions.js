@@ -150,62 +150,7 @@ try {
     
         // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
         this.wait(5*secondsToMilliseconds, function () {
-            console.log("Initialize sensors");
-            voltageSensor = new five.Sensor("A0");
-            ampSensor = new five.Sensor("A1");
-    
-            voltageSensor.on("change", function () {
-                // subtract the last reading:
-                totalA0 = totalA0 - readingsA0[indexA0];
-                readingsA0[indexA0] = this.value;
-                // add the reading to the total:
-                totalA0 = totalA0 + readingsA0[indexA0];
-                // advance to the next position in the array: 
-                indexA0 = indexA0 + 1;
-                // if we're at the end of the array...
-                if (indexA0 >= numReadings) {
-                    // ...wrap around to the beginning:
-                    indexA0 = 0;
-                    arrayFull = true;
-                }
-                // calculate the average when the array is full
-                if (arrayFull) {
-                    averageA0 = totalA0 / numReadings;
-                    // Calculate the current voltage
-                    // currVoltage = ((averageA0 / analogPinMax) * arduinoPower) / (res2 / (res1 + res2));
-                    // 11/30/2019 JJK - Adjust to -30
-                    currVoltage = ((averageA0 / (analogPinMax - 30)) * arduinoPower) / (res2 / (res1 + res2));
-                }
-            });
-    
-            ampSensor.on("change", function () {
-                // subtract the last reading:
-                totalA1 = totalA1 - readingsA1[indexA1];
-                readingsA1[indexA1] = this.value;
-                // add the reading to the total:
-                totalA1 = totalA1 + readingsA1[indexA1];
-                // advance to the next position in the array: 
-                indexA1 = indexA1 + 1;
-                // if we're at the end of the array...
-                if (indexA1 >= numReadings) {
-                    // ...wrap around to the beginning:
-                    indexA1 = 0;
-                    arrayFull1 = true;
-                }
-                // calculate the average:
-                if (arrayFull1) {
-                    averageA1 = totalA1 / numReadings;
-                    //tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
-                    //tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
-                    // 11/30/2019 JJK - Adjustment to 5006
-                    tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
-                    currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
-                    //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
-                    //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
-                    //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
-                    //const ACSoffset = 2500; 
-                }
-            });
+            startSensors();
         });
     
         log("End of board.on (initialize) event");
@@ -217,6 +162,65 @@ try {
     console.error(err.stack);
 } finally {
     // turn things off?
+}
+
+function startSensors() {
+    console.log("$$$$$ Starting sensors");
+    voltageSensor = new five.Sensor("A0");
+    ampSensor = new five.Sensor("A1");
+
+    voltageSensor.on("change", function () {
+        // subtract the last reading:
+        totalA0 = totalA0 - readingsA0[indexA0];
+        readingsA0[indexA0] = this.value;
+        // add the reading to the total:
+        totalA0 = totalA0 + readingsA0[indexA0];
+        // advance to the next position in the array: 
+        indexA0 = indexA0 + 1;
+        // if we're at the end of the array...
+        if (indexA0 >= numReadings) {
+            // ...wrap around to the beginning:
+            indexA0 = 0;
+            arrayFull = true;
+        }
+        // calculate the average when the array is full
+        if (arrayFull) {
+            averageA0 = totalA0 / numReadings;
+            // Calculate the current voltage
+            // currVoltage = ((averageA0 / analogPinMax) * arduinoPower) / (res2 / (res1 + res2));
+            // 11/30/2019 JJK - Adjust to -30
+            currVoltage = ((averageA0 / (analogPinMax - 30)) * arduinoPower) / (res2 / (res1 + res2));
+        }
+    });
+
+    ampSensor.on("change", function () {
+        // subtract the last reading:
+        totalA1 = totalA1 - readingsA1[indexA1];
+        readingsA1[indexA1] = this.value;
+        // add the reading to the total:
+        totalA1 = totalA1 + readingsA1[indexA1];
+        // advance to the next position in the array: 
+        indexA1 = indexA1 + 1;
+        // if we're at the end of the array...
+        if (indexA1 >= numReadings) {
+            // ...wrap around to the beginning:
+            indexA1 = 0;
+            arrayFull1 = true;
+        }
+        // calculate the average:
+        if (arrayFull1) {
+            averageA1 = totalA1 / numReadings;
+            //tempVoltage = (averageA1 / analogPinMax) * 5010; // Gets you mV    
+            //tempVoltage = (averageA1 / analogPinMax) * 5000; // Gets you mV    
+            // 11/30/2019 JJK - Adjustment to 5006
+            tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
+            currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
+            //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
+            //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
+            //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
+            //const ACSoffset = 2500; 
+        }
+    });
 }
 
 // Send metric values to a website
@@ -245,7 +249,7 @@ function logMetric() {
     metricData.pvWattsOut = currWattsOut.toFixed(2);
 
     //emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    //log("logMetric, metricJSON = "+JSON.stringify(metricData));
+    //log(">>> logMetric, metricJSON = "+JSON.stringify(metricData));
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
@@ -257,11 +261,18 @@ function logMetric() {
             .then(checkResponseStatus)
             .then(res => res.json())
             //.then(json => console.log(json))
-            .catch(err => log(err));
+            .catch(err => handleFetchError(err));
     }
 
     // Set the next time the function will run
     setTimeout(logMetric, metricInterval);
+}
+
+function handleFetchError(err) {
+    log(" >>> FETCH ERROR: "+err);
+
+    // Restart sensors if there is a Fetch error
+    startSensors();
 }
 
 function fetchWeather() {
@@ -280,7 +291,7 @@ function fetchWeather() {
                 metricData.weatherHumidity = json.main.humidity;
                 metricData.weatherDateTime = json.dt;
             })
-            .catch(err => log(err));
+            .catch(err => handleFetchError(err));
     }
 
     setTimeout(fetchWeather, weatherInterval);
