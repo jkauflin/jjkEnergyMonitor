@@ -30,6 +30,8 @@ Modification History
                 went back to v2 for now
 2022-04-17 JJK  Working on error handling - implementing a overall try/catch
                 for the main executable code
+2022-04-30 JJK  Implemented the startSensors function to re-start the
+                sensors periodically or after a FETCH failure
 =============================================================================*/
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
@@ -103,7 +105,7 @@ for (var i = 0; i < numReadings; i++) {
     readingsA1[i] = 0;
 }
 var arrayFull1 = false;
-
+var prevHours = 0;
 
 // Create Johnny-Five board object
 // When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
@@ -165,7 +167,7 @@ try {
 }
 
 function startSensors() {
-    console.log("$$$$$ Starting sensors");
+    log("$$$$$ Starting sensors");
     voltageSensor = new five.Sensor("A0");
     ampSensor = new five.Sensor("A1");
 
@@ -255,6 +257,12 @@ function logMetric() {
     var date = new Date();
     var hours = date.getHours();
     if (hours > 6 && hours < 20) {
+        // Restart the sensors every hour
+        if (hours > prevHours) {
+            prevHours = hours;
+            startSensors();
+        }
+        
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
         //log(`log metricData = ${JSON.stringify(metricData)}`);
         fetch(emoncmsUrl)
