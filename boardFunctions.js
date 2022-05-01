@@ -152,6 +152,7 @@ try {
     
         // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
         this.wait(5*secondsToMilliseconds, function () {
+            log("$$$$$ Starting sensors");
             startSensors();
         });
     
@@ -167,7 +168,7 @@ try {
 }
 
 function startSensors() {
-    log("$$$$$ Starting sensors");
+    //log("$$$$$ Starting sensors");
     voltageSensor = new five.Sensor("A0");
     ampSensor = new five.Sensor("A1");
 
