@@ -168,7 +168,9 @@ try {
 }
 
 function startSensors() {
-    //log("$$$$$ Starting sensors");
+    log("$$$$$ Starting sensors");
+    voltageSensor = null;
+    ampSensor = null;
     voltageSensor = new five.Sensor("A0");
     ampSensor = new five.Sensor("A1");
 
@@ -252,7 +254,7 @@ function logMetric() {
     metricData.pvWattsOut = currWattsOut.toFixed(2);
 
     //emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    //log(">>> logMetric, metricJSON = "+JSON.stringify(metricData));
+    log(">>> logMetric, metricJSON = "+JSON.stringify(metricData));
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
