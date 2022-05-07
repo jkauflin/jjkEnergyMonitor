@@ -118,7 +118,7 @@ var board = null;
 // Start fetching weather after a few seconds
 setTimeout(fetchWeather, 5*secondsToMilliseconds);
 // Start sending metrics X seconds after starting (so things are calm and value arrays are full)
-setTimeout(logMetric, 20*secondsToMilliseconds);
+setTimeout(logMetric, 5*secondsToMilliseconds);
     
 
 function startBoard() {
@@ -148,7 +148,7 @@ function startBoard() {
         board.on("ready", function () {
             log("*** board ready ***");
         
-
+            /*
             log(">>>>>>> REBOOT <<<<<<<");
             const { exec } = require('child_process');
             exec('ls | reboot', (err, stdout, stderr) => {
@@ -161,7 +161,7 @@ function startBoard() {
                console.log(`stderr: ${stderr}`);
               }
             });
-            
+            */
 
             // If the board is exiting, execute cleanup actions
             this.on("exit", function () {
