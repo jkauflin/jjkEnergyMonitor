@@ -148,6 +148,21 @@ function startBoard() {
         board.on("ready", function () {
             log("*** board ready ***");
         
+
+            log(">>>>>>> REBOOT <<<<<<<");
+            const { exec } = require('child_process');
+            exec('ls | reboot', (err, stdout, stderr) => {
+              if (err) {
+                //some err occurred
+                console.error(err)
+              } else {
+               // the *entire* stdout and stderr (buffered)
+               console.log(`stdout: ${stdout}`);
+               console.log(`stderr: ${stderr}`);
+              }
+            });
+            
+
             // If the board is exiting, execute cleanup actions
             this.on("exit", function () {
                 log("on EXIT");
@@ -247,6 +262,9 @@ function logMetric() {
     // Just set low values to zero
     if (currVoltage < 2.0) {
         currVoltage = 0.0;
+        currAmperage = 0.0;
+    }
+    if (currAmperage < 0.0) {
         currAmperage = 0.0;
     }
 
