@@ -163,7 +163,9 @@ function startBoard() {
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
 
-                //voltageSensor = new five.Sensor("A0");
+                voltageSensor = new five.Sensor("A0");
+                ampSensor = new five.Sensor("A1");
+                /*
                 voltageSensor = new five.Sensor({
                     pin: "A0", 
                     freq: 250
@@ -172,6 +174,7 @@ function startBoard() {
                     pin: "A1", 
                     freq: 250
                 });
+                */
 
                 voltageSensor.on("change", function () {
                     // subtract the last reading:
@@ -271,6 +274,7 @@ function logMetric() {
     var date = new Date();
     var hours = date.getHours();
     if (hours > 6 && hours < 20) {
+
         // Restart the sensors every hour
         if (hours > prevHours) {
             prevHours = hours;
