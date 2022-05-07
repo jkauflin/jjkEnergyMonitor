@@ -268,7 +268,8 @@ function logMetric() {
     metricData.pvWattsOut = currWattsOut.toFixed(2);
 
     //emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    log(">>> logMetric, metricJSON = "+JSON.stringify(metricData).substring(0,150));
+    log(">>> logMetric, metricJSON = "+JSON.stringify(metricData).substring(0,107));
+
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
