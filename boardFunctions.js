@@ -36,7 +36,9 @@ Modification History
                 it from overloading (trying to find the problem of
                 hang-ups on BBB)
 2022-05-07 JJK  Looking at re-starting the board as well to reset the 
-                sensors
+                sensors - restart the board every hour and see if it hangs
+                up again (then check for repeating value condition to 
+                reset the board?)
 =============================================================================*/
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
@@ -180,6 +182,7 @@ function startBoard() {
 
                 voltageSensor = new five.Sensor("A0");
                 ampSensor = new five.Sensor("A1");
+                // The freq: option caused it not to give values - need to check that
                 /*
                 voltageSensor = new five.Sensor({
                     pin: "A0", 
@@ -286,7 +289,7 @@ function logMetric() {
     metricData.pvWattsOut = currWattsOut.toFixed(2);
 
     //emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    log(">>> logMetric, metricJSON = "+JSON.stringify(metricData).substring(0,107));
+    log(`>>> logMetric, metricJSON = ${JSON.stringify(metricData).substring(0,105)}`);
 
 
     // Use this if we need to limit the send to between the hours of 6 and 20
@@ -297,6 +300,7 @@ function logMetric() {
         // Restart the sensors every hour
         if (hours > prevHours) {
             prevHours = hours;
+            log("!!!!! Restarting Board !!!!!!");
             startBoard();
         }
         
