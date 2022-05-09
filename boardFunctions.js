@@ -288,14 +288,15 @@ function logMetric() {
     metricData.pvWatts = currWatts.toFixed(2);
     metricData.pvWattsOut = currWattsOut.toFixed(2);
 
-    //emoncmsUrl = EMONCMS_INPUT_URL + "&json=" + metricJSON;
-    log(`>>> logMetric, metricJSON = ${JSON.stringify(metricData).substring(0,105)}`);
-
-
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
     if (hours > 6 && hours < 20) {
+        log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
+
+        if (hours == 7 && prevHours > 19) {
+            prevHours = 0;
+        }
 
         // Restart the sensors every hour
         if (hours > prevHours) {
