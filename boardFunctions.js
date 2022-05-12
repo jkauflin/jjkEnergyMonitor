@@ -39,6 +39,11 @@ Modification History
                 sensors - restart the board every hour and see if it hangs
                 up again (then check for repeating value condition to 
                 reset the board?)
+2022-05-12 JJK  Found out trying to "reset" the board and sensors by 
+                re-creating the johnny-five object didn't seem to do
+                anything, go giving up on re-starting the board, and 
+                just put in a RuntimeMaxSec on the systemd service to
+                re-start that every X seconds
 =============================================================================*/
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
@@ -115,12 +120,7 @@ var arrayFull1 = false;
 var prevHours = 0;
 var board = null;
 
-//startBoard();
-
-// Start fetching weather after a few seconds
-setTimeout(fetchWeather, 5*secondsToMilliseconds);
-// Start sending metrics X seconds after starting (so things are calm and value arrays are full)
-setTimeout(logMetric, 5*secondsToMilliseconds);
+startBoard();
     
 
 function startBoard() {
@@ -248,6 +248,11 @@ function startBoard() {
                 });
             });
         
+            // Start fetching weather after a few seconds
+            setTimeout(fetchWeather, 5*secondsToMilliseconds);
+            // Start sending metrics X seconds after starting (so things are calm and value arrays are full)
+            setTimeout(logMetric, 10*secondsToMilliseconds);
+
             log("End of board.on (initialize) event");
         
         }); // board.on("ready", function() {
@@ -294,6 +299,7 @@ function logMetric() {
     if (hours > 5 && hours < 20) {
         log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
 
+        /*
         if (hours == 6 && prevHours > 18) {
             prevHours = 0;
         }
@@ -304,6 +310,7 @@ function logMetric() {
             log("!!!!! Restarting Board !!!!!!");
             startBoard();
         }
+        */
         
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
         //log(`log metricData = ${JSON.stringify(metricData)}`);

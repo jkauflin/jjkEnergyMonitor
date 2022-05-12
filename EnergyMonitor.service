@@ -22,6 +22,9 @@ Type=simple
 User=pi
 WorkingDirectory=/home/pi/jjkEnergyMonitor
 ExecStart=/usr/bin/npm start
+# 60 x 60 x 60 x #hours
+# 216,000 x 1 = restart every hour
+RuntimeMaxSec=216000
 Restart=always
 
 [Install]
