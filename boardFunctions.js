@@ -44,6 +44,7 @@ Modification History
                 anything, go giving up on re-starting the board, and 
                 just put in a RuntimeMaxSec on the systemd service to
                 re-start that every X seconds
+2022-05-15 JJK  Adding counter for duplicate values
 =============================================================================*/
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
@@ -118,6 +119,9 @@ for (var i = 0; i < numReadings; i++) {
 }
 var arrayFull1 = false;
 var prevHours = 0;
+var currVoltagePrev = 0;
+var currAmperagePrev = 0;
+var duplicateCnt = 0;
 var board = null;
 
 startBoard();
@@ -275,6 +279,21 @@ function logMetric() {
     if (currAmperage < 0.0) {
         currAmperage = 0.0;
     }
+
+    // Check if the numbers are repeating
+    if (currVoltage == currVoltagePrev && currAmperage == currAmperagePrev && currAmperage > 0
+        ) {
+        duplicateCnt++;
+    }
+    currVoltagePrev = currVoltage;
+    currAmperagePrev = currAmperage;
+    if (duplicateCnt > 10) {
+        // Re-start the service
+        // *** figure out how to do this ***
+        log("++++++++++ over 10 DUPLICATE values detected ++++++++++");
+        duplicateCnt = 0;
+    }
+
 
     // Calculate current PV watts from voltage and amps
     currWatts = currVoltage * currAmperage;
