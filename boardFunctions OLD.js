@@ -52,7 +52,6 @@ const fetch = require('node-fetch');
 // Library to control the Arduino board
 var five = require("johnny-five");
 //var Raspi = require("raspi-io").RaspiIO;
-var beagleBone = require('beaglebone-io');
 
 // Global variables
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
@@ -139,7 +138,6 @@ function startBoard() {
         // When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
         // be sure to shut the REPL off!
         board = new five.Board({
-            io: new BeagleBone(),
             repl: false,
             debug: false
             //    timeout: 12000
@@ -189,14 +187,16 @@ function startBoard() {
                 voltageSensor = new five.Sensor("A0");
                 ampSensor = new five.Sensor("A1");
                 // The freq: option caused it not to give values - need to check that
-                //voltageSensor = new five.Sensor({
-                //    pin: "A0", 
-                //    freq: 250
-                //});
-                //ampSensor = new five.Sensor({
-                //    pin: "A1", 
-                //    freq: 250
-                //});
+                /*
+                voltageSensor = new five.Sensor({
+                    pin: "A0", 
+                    freq: 250
+                });
+                ampSensor = new five.Sensor({
+                    pin: "A1", 
+                    freq: 250
+                });
+                */
 
                 voltageSensor.on("change", function () {
                     // subtract the last reading:
