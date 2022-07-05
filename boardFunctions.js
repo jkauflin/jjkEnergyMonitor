@@ -52,7 +52,7 @@ const fetch = require('node-fetch');
 // Library to control the Arduino board
 var five = require("johnny-five");
 //var Raspi = require("raspi-io").RaspiIO;
-var beagleBone = require('beaglebone-io');
+var BeagleBone = require('beaglebone-io');
 
 // Global variables
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
