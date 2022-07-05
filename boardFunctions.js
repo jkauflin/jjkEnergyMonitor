@@ -154,8 +154,12 @@ function startBoard() {
         //-------------------------------------------------------------------------------------------------------
         // When the board is ready, create and intialize global component objects (to be used by functions)
         board.on("ready", function () {
-            log("*** board ready ***");
+            log("*** board ready ***")
         
+            var led = new five.Led()
+            log(">>>>> blink default LED")
+            led.blink()
+
             /*
             log(">>>>>>> REBOOT <<<<<<<");
             const { exec } = require('child_process');
@@ -182,6 +186,7 @@ function startBoard() {
                 //cleanup actions
             });
         
+            /*
             // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
@@ -256,6 +261,7 @@ function startBoard() {
             setTimeout(fetchWeather, 5*secondsToMilliseconds);
             // Start sending metrics X seconds after starting (so things are calm and value arrays are full)
             setTimeout(logMetric, 10*secondsToMilliseconds);
+            */
 
             log("End of board.on (initialize) event");
         
