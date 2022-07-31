@@ -233,6 +233,7 @@ function startBoard() {
                 });
 
                 ampSensor.on("change", function () {
+                    log(">>> ampSensor this.value = "+this.value);
                     // subtract the last reading:
                     totalA1 = totalA1 - readingsA1[indexA1];
                     readingsA1[indexA1] = this.value;
