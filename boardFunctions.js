@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2019,2021 John J Kauflin, All rights reserved. 
+(C) Copyright 2019,2021,2022 John J Kauflin, All rights reserved. 
 -----------------------------------------------------------------------------
 DESCRIPTION: NodeJS module to handle board functions.  Communicates with
              the Arduino Mega board, and monitors the following voltage
@@ -45,6 +45,8 @@ Modification History
                 just put in a RuntimeMaxSec on the systemd service to
                 re-start that every X seconds
 2022-05-15 JJK  Adding counter for duplicate values
+2022-07-31 JJK  Working on monitor for new panels setup
+
 =============================================================================*/
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
@@ -52,7 +54,7 @@ const fetch = require('node-fetch');
 // Library to control the Arduino board
 var five = require("johnny-five");
 //var Raspi = require("raspi-io").RaspiIO;
-var BeagleBone = require('beaglebone-io');
+//var BeagleBone = require('beaglebone-io');
 
 // Global variables
 const EMONCMS_INPUT_URL = process.env.EMONCMS_INPUT_URL;
@@ -94,7 +96,11 @@ const res2 = 10000.0;
 const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
 const ACSoffset = 2500;
 var tempVoltage = 0;
-// log("DC VOLTMETER Maximum Voltage: "+(arduinoPower / (res2 / (res1 + res2))));
+log("Max. voltage = arduinoPower / (res2 / (res1 + res2))");
+log("Device (arduino) power voltage: "+arduinoPower);
+log("                    Resistor 1: "+res1);
+log("                    Resistor 2: "+res2);
+log("  DC VOLTMETER Maximum Voltage: "+(arduinoPower / (res2 / (res1 + res2))));
 // DC VOLTMETER Maximum Voltage: 170
 
 
@@ -139,10 +145,10 @@ function startBoard() {
         // When running Johnny-Five programs as a sub-process (eg. init.d, or npm scripts), 
         // be sure to shut the REPL off!
         board = new five.Board({
-            io: new BeagleBone(),
+            // io: new BeagleBone(),
             repl: false,
             debug: false
-            //    timeout: 12000
+            // timeout: 12000
         });
     
         board.on("error", function () {
@@ -186,7 +192,6 @@ function startBoard() {
                 //cleanup actions
             });
         
-            /*
             // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
@@ -261,8 +266,8 @@ function startBoard() {
             setTimeout(fetchWeather, 5*secondsToMilliseconds);
             // Start sending metrics X seconds after starting (so things are calm and value arrays are full)
             setTimeout(logMetric, 10*secondsToMilliseconds);
-            */
 
+            
             log("End of board.on (initialize) event");
         
         }); // board.on("ready", function() {
@@ -338,7 +343,7 @@ function logMetric() {
         */
         
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
-        //log(`log metricData = ${JSON.stringify(metricData)}`);
+        log(`log metricData = ${JSON.stringify(metricData)}`);
         fetch(emoncmsUrl)
             .then(checkResponseStatus)
             .then(res => res.json())
