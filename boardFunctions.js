@@ -197,7 +197,7 @@ function startBoard() {
                 log("$$$$$ Starting sensors");
 
                 var voltageSensor2 = new five.Sensor("A3");
-                voltageSensor.on("change", function () {
+                voltageSensor2.on("change", function () {
                     log("A3 = "+this.value)
                 });
 
