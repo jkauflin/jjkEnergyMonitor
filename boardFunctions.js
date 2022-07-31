@@ -196,6 +196,11 @@ function startBoard() {
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
 
+                var voltageSensor2 = new five.Sensor("A3");
+                voltageSensor.on("change", function () {
+                    log("A3 = "+this.value)
+                });
+
                 voltageSensor = new five.Sensor("A0");
                 ampSensor = new five.Sensor("A1");
                 // The freq: option caused it not to give values - need to check that
@@ -270,10 +275,14 @@ function startBoard() {
                         // 11/30/2019 JJK - Adjustment to 5006
                         tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
                         currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
-                        log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
+                        //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
                         //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
                         //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
                         //const ACSoffset = 2500; 
+
+                        //averageA1 = 201.9, tempVoltage = 987.9876832844575, currAmperage = -97.54918172358339
+                        //>>> logMetric, {"pvVolts":"35.06","pvAmps":"0.00","pvWatts":"0.00","pvWattsOut":"0.00",
+                        
                     }
                 });
             });
@@ -359,7 +368,6 @@ function logMetric() {
         */
         
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
-        log(`log metricData = ${JSON.stringify(metricData)}`);
         fetch(emoncmsUrl)
             .then(checkResponseStatus)
             .then(res => res.json())
