@@ -192,14 +192,83 @@ function startBoard() {
                 //cleanup actions
             });
         
+/*
+
+>>> ampSensor this.value = 518
+Split core A3 = 432
+>>> ampSensor this.value = 519
+Split core A3 = 413
+$$$$$ Voltage Sensor this.value = 235
+>>> ampSensor this.value = 518
+Split core A3 = 817
+$$$$$ Voltage Sensor this.value = 240
+Split core A3 = 670
+$$$$$ Voltage Sensor this.value = 237
+>>> ampSensor this.value = 519
+Split core A3 = 509
+$$$$$ Voltage Sensor this.value = 234
+>>> ampSensor this.value = 517
+Split core A3 = 226
+$$$$$ Voltage Sensor this.value = 238
+>>> ampSensor this.value = 519
+$$$$$ Voltage Sensor this.value = 242
+Split core A3 = 592
+$$$$$ Voltage Sensor this.value = 242
+>>> ampSensor this.value = 517
+Split core A3 = 627
+$$$$$ Voltage Sensor this.value = 238
+>>> ampSensor this.value = 519
+Split core A3 = 497
+$$$$$ Voltage Sensor this.value = 241
+>>> ampSensor this.value = 518
+Split core A3 = 566
+$$$$$ Voltage Sensor this.value = 236
+Split core A3 = 652
+$$$$$ Voltage Sensor this.value = 241
+>>> ampSensor this.value = 516
+Split core A3 = 811
+$$$$$ Voltage Sensor this.value = 238
+>>> ampSensor this.value = 518
+Split core A3 = 785
+$$$$$ Voltage Sensor this.value = 235
+Split core A3 = 245
+$$$$$ Voltage Sensor this.value = 240
+Split core A3 = 318
+$$$$$ Voltage Sensor this.value = 236
+>>> ampSensor this.value = 519
+Split core A3 = 543
+$$$$$ Voltage Sensor this.value = 234
+Split core A3 = 823
+$$$$$ Voltage Sensor this.value = 240
+Split core A3 = 649
+$$$$$ Voltage Sensor this.value = 237
+>>> ampSensor this.value = 518
+Split core A3 = 420
+$$$$$ Voltage Sensor this.value = 238
+>>> ampSensor this.value = 516
+Split core A3 = 337
+$$$$$ Voltage Sensor this.value = 236
+>>> ampSensor this.value = 520
+Split core A3 = 642
+>>> ampSensor this.value = 518
+Split core A3 = 413
+$$$$$ Voltage Sensor this.value = 235
+Split core A3 = 511
+$$$$$ Voltage Sensor this.value = 238
+Split core A3 = 304
+>>> ampSensor this.value = 520
+
+*/
+
             // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
-
+                /*
                 var voltageSensor2 = new five.Sensor("A3");
                 voltageSensor2.on("change", function () {
                     log("Split core A3 = "+this.value)
                 });
+                */
 
                 voltageSensor = new five.Sensor("A0");
                 ampSensor = new five.Sensor("A1");
@@ -214,8 +283,7 @@ function startBoard() {
                 //});
 
                 voltageSensor.on("change", function () {
-
-                    log("$$$$$ Voltage Sensor this.value = "+this.value);
+                    //log("$$$$$ Voltage Sensor this.value = "+this.value);
 
                     // subtract the last reading:
                     totalA0 = totalA0 - readingsA0[indexA0];
@@ -241,8 +309,7 @@ function startBoard() {
                 });
 
                 ampSensor.on("change", function () {
-                    
-                    log(">>> ampSensor this.value = "+this.value);
+                    //log(">>> ampSensor this.value = "+this.value);
                     
                     // subtract the last reading:
                     totalA1 = totalA1 - readingsA1[indexA1];
@@ -277,12 +344,10 @@ function startBoard() {
                 });
             });
         
-            /*
             // Start fetching weather after a few seconds
             setTimeout(fetchWeather, 5*secondsToMilliseconds);
             // Start sending metrics X seconds after starting (so things are calm and value arrays are full)
             setTimeout(logMetric, 10*secondsToMilliseconds);
-            */
             
             log("End of board.on (initialize) event");
         
