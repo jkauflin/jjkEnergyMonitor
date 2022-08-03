@@ -408,7 +408,7 @@ function logMetric() {
     var date = new Date();
     var hours = date.getHours();
     if (hours > 5 && hours < 20) {
-        log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
+        //log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
 
         /*
         if (hours == 6 && prevHours > 18) {
