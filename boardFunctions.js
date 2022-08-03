@@ -196,10 +196,12 @@ function startBoard() {
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
 
+                /*
                 var voltageSensor2 = new five.Sensor("A3");
                 voltageSensor2.on("change", function () {
                     log("A3 = "+this.value)
                 });
+                */
 
                 voltageSensor = new five.Sensor("A0");
                 ampSensor = new five.Sensor("A1");
