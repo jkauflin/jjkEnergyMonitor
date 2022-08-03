@@ -162,9 +162,11 @@ function startBoard() {
         board.on("ready", function () {
             log("*** board ready ***")
         
+            /*
             var led = new five.Led()
             log(">>>>> blink default LED")
             led.blink()
+            */
 
             /*
             log(">>>>>>> REBOOT <<<<<<<");
