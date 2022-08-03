@@ -46,7 +46,7 @@ Modification History
                 re-start that every X seconds
 2022-05-15 JJK  Adding counter for duplicate values
 2022-07-31 JJK  Working on monitor for new panels setup
-
+2022-08-03 JJK  Got old sensors working for new setup
 =============================================================================*/
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
@@ -391,10 +391,10 @@ function logMetric() {
     currWatts = currVoltage * currAmperage;
 
     // Get estimate of the power from the new grid-tie inverter
-    // 2 panels which is 1/4 of the 8 panels in the first grid-tie inverter
-    var estimatedSecondInverterWatts = currWatts * 0.25;
+    // 4 panels which is 1/2 of the 8 panels in the first grid-tie inverter
+    var estimatedSecondInverterWatts = currWatts * 0.50;
     // Add estimated power to the watts out total
-    //currWatts = currWatts + estimatedSecondInverterWatts;
+    currWatts = currWatts + estimatedSecondInverterWatts;
 
     // Get an estimate of the post-inverter watts (losing say 12%)
     currWattsOut = currWatts * 0.88;

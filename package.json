@@ -16,7 +16,6 @@
   "dependencies": {
     "dotenv": "latest",
     "node-fetch": "^2.6.7",
-    "johnny-five": "^2.1.0",
-    "beaglebone-io": "^4.1.0"
+    "johnny-five": "^2.1.0"
   }
 }
