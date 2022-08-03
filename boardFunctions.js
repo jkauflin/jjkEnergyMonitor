@@ -196,12 +196,10 @@ function startBoard() {
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
 
-                /*
                 var voltageSensor2 = new five.Sensor("A3");
                 voltageSensor2.on("change", function () {
-                    log("A3 = "+this.value)
+                    log("Split core A3 = "+this.value)
                 });
-                */
 
                 voltageSensor = new five.Sensor("A0");
                 ampSensor = new five.Sensor("A1");
@@ -216,6 +214,9 @@ function startBoard() {
                 //});
 
                 voltageSensor.on("change", function () {
+
+                    log("$$$$$ Voltage Sensor this.value = "+this.value);
+
                     // subtract the last reading:
                     totalA0 = totalA0 - readingsA0[indexA0];
                     readingsA0[indexA0] = this.value;
@@ -240,22 +241,9 @@ function startBoard() {
                 });
 
                 ampSensor.on("change", function () {
-                    /*
+                    
                     log(">>> ampSensor this.value = "+this.value);
->>> ampSensor this.value = 204
->>> ampSensor this.value = 202
->>> ampSensor this.value = 198
->>> ampSensor this.value = 200
->>> ampSensor this.value = 208
->>> ampSensor this.value = 203
->>> ampSensor this.value = 200
->>> ampSensor this.value = 200
->>> ampSensor this.value = 202
->>> ampSensor this.value = 201
->>> ampSensor this.value = 202
->>> ampSensor this.value = 198
->>> ampSensor this.value = 199
-                    */
+                    
                     // subtract the last reading:
                     totalA1 = totalA1 - readingsA1[indexA1];
                     readingsA1[indexA1] = this.value;
@@ -289,11 +277,12 @@ function startBoard() {
                 });
             });
         
+            /*
             // Start fetching weather after a few seconds
             setTimeout(fetchWeather, 5*secondsToMilliseconds);
             // Start sending metrics X seconds after starting (so things are calm and value arrays are full)
             setTimeout(logMetric, 10*secondsToMilliseconds);
-
+            */
             
             log("End of board.on (initialize) event");
         
