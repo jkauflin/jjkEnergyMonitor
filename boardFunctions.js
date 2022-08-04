@@ -371,8 +371,8 @@ function logMetric() {
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
-    //if (hours > 5 && hours < 20) {
-        log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
+    if (hours > 5 && hours < 20) {
+        //log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
 
         /*
         if (hours == 6 && prevHours > 18) {
@@ -397,7 +397,7 @@ function logMetric() {
 
     // Set the next time the function will run
     setTimeout(logMetric, metricInterval);
-//}
+}
 
 function handleFetchError(err) {
     log(" >>> FETCH ERROR: "+err);
