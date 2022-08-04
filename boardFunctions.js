@@ -195,7 +195,6 @@ function startBoard() {
             });
         
 /*
-
 >>> ampSensor this.value = 518
 Split core A3 = 432
 >>> ampSensor this.value = 519
@@ -224,42 +223,6 @@ Split core A3 = 497
 $$$$$ Voltage Sensor this.value = 241
 >>> ampSensor this.value = 518
 Split core A3 = 566
-$$$$$ Voltage Sensor this.value = 236
-Split core A3 = 652
-$$$$$ Voltage Sensor this.value = 241
->>> ampSensor this.value = 516
-Split core A3 = 811
-$$$$$ Voltage Sensor this.value = 238
->>> ampSensor this.value = 518
-Split core A3 = 785
-$$$$$ Voltage Sensor this.value = 235
-Split core A3 = 245
-$$$$$ Voltage Sensor this.value = 240
-Split core A3 = 318
-$$$$$ Voltage Sensor this.value = 236
->>> ampSensor this.value = 519
-Split core A3 = 543
-$$$$$ Voltage Sensor this.value = 234
-Split core A3 = 823
-$$$$$ Voltage Sensor this.value = 240
-Split core A3 = 649
-$$$$$ Voltage Sensor this.value = 237
->>> ampSensor this.value = 518
-Split core A3 = 420
-$$$$$ Voltage Sensor this.value = 238
->>> ampSensor this.value = 516
-Split core A3 = 337
-$$$$$ Voltage Sensor this.value = 236
->>> ampSensor this.value = 520
-Split core A3 = 642
->>> ampSensor this.value = 518
-Split core A3 = 413
-$$$$$ Voltage Sensor this.value = 235
-Split core A3 = 511
-$$$$$ Voltage Sensor this.value = 238
-Split core A3 = 304
->>> ampSensor this.value = 520
-
 */
 
             // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
@@ -375,8 +338,7 @@ function logMetric() {
     }
 
     // Check if the numbers are repeating
-    if (currVoltage == currVoltagePrev && currAmperage == currAmperagePrev && currAmperage > 0
-        ) {
+    if (currVoltage == currVoltagePrev && currAmperage == currAmperagePrev && currAmperage > 0) {
         duplicateCnt++;
     }
     currVoltagePrev = currVoltage;
