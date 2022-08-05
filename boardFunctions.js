@@ -249,6 +249,268 @@ averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.6675432787
 averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.667543278781552
 
 
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 502
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+$$$$$ Voltage Sensor this.value = 225
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 503
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 504
+averageA1 = 503, tempVoltage = 2461.405669599218, currAmperage = -2.489956800050447
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 502
+averageA1 = 502.9, tempVoltage = 2460.9163245356795, currAmperage = -2.5215274493110034
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 503
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+$$$$$ Voltage Sensor this.value = 226
+>>> ampSensor this.value = 502
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+>>> ampSensor this.value = 503
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 504
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 501
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 504
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 502
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 501
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 504
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 502
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 225
+$$$$$ Voltage Sensor this.value = 229
+$$$$$ Voltage Sensor this.value = 230
+>>> ampSensor this.value = 501
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 224
+>>> ampSensor this.value = 503
+averageA1 = 502.5, tempVoltage = 2458.958944281525, currAmperage = -2.647810046353228
+$$$$$ Voltage Sensor this.value = 229
+$$$$$ Voltage Sensor this.value = 224
+>>> ampSensor this.value = 501
+averageA1 = 502.3, tempVoltage = 2457.9802541544477, currAmperage = -2.7109513448743408
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 504
+averageA1 = 502.3, tempVoltage = 2457.9802541544477, currAmperage = -2.7109513448743408
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 501
+averageA1 = 502.3, tempVoltage = 2457.9802541544477, currAmperage = -2.7109513448743408
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 503
+averageA1 = 502.2, tempVoltage = 2457.490909090909, currAmperage = -2.7425219941348966
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 504
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+>>> ampSensor this.value = 501
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 504
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 228
+$$$$$ Voltage Sensor this.value = 224
+>>> ampSensor this.value = 502
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 504
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 502
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 501
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 504
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 501
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 223
+>>> ampSensor this.value = 504
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 504
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 501
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 226
+>>> ampSensor this.value = 504
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 501
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 225
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 504
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 501
+averageA1 = 502.5, tempVoltage = 2458.958944281525, currAmperage = -2.647810046353228
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 502
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 502
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 501
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 504
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 229
+>>> logMetric, {"pvVolts":"38.86","pvAmps":"0.00","pvWatts":"0.00","pvWattsOut":"0.00","weather":803,"weatherTemp":78.98
+>>> ampSensor this.value = 504
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 503
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 227
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 504
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 501
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 504
+averageA1 = 502.6, tempVoltage = 2459.4482893450636, currAmperage = -2.616239397092672
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 502
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 504
+averageA1 = 502.9, tempVoltage = 2460.9163245356795, currAmperage = -2.5215274493110034
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 501
+averageA1 = 502.8, tempVoltage = 2460.426979472141, currAmperage = -2.5530980985715592
+$$$$$ Voltage Sensor this.value = 226
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 503
+averageA1 = 503, tempVoltage = 2461.405669599218, currAmperage = -2.489956800050447
+$$$$$ Voltage Sensor this.value = 224
+>>> ampSensor this.value = 501
+averageA1 = 502.7, tempVoltage = 2459.937634408602, currAmperage = -2.5846687478321155
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 502
+averageA1 = 502.5, tempVoltage = 2458.958944281525, currAmperage = -2.647810046353228
+$$$$$ Voltage Sensor this.value = 226
+>>> ampSensor this.value = 502
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 501
+averageA1 = 502.1, tempVoltage = 2457.0015640273705, currAmperage = -2.774092643395453
+$$$$$ Voltage Sensor this.value = 233
+>>> ampSensor this.value = 504
+averageA1 = 502.4, tempVoltage = 2458.4695992179863, currAmperage = -2.6793806956137844
+$$$$$ Voltage Sensor this.value = 225
+>>> ampSensor this.value = 501
+averageA1 = 502.1, tempVoltage = 2457.0015640273705, currAmperage = -2.774092643395453
+$$$$$ Voltage Sensor this.value = 226
+>>> ampSensor this.value = 502
+averageA1 = 502.1, tempVoltage = 2457.0015640273705, currAmperage = -2.774092643395453
+$$$$$ Voltage Sensor this.value = 229
+>>> ampSensor this.value = 503
+averageA1 = 502, tempVoltage = 2456.512218963832, currAmperage = -2.8056632926560092
+$$$$$ Voltage Sensor this.value = 224
+>>> ampSensor this.value = 501
+averageA1 = 502, tempVoltage = 2456.512218963832, currAmperage = -2.8056632926560092
+$$$$$ Voltage Sensor this.value = 227
+>>> ampSensor this.value = 502
+averageA1 = 501.9, tempVoltage = 2456.0228739002932, currAmperage = -2.8372339419165655
+^Con EXIT
+$$$$$ Voltage Sensor this.value = 228
+>>> ampSensor this.value = 504
+averageA1 = 502.2, tempVoltage = 2457.490909090909, currAmperage = -2.7425219941348966
+
+
+
+
+$$$$$ Voltage Sensor this.value = 463
+$$$$$ Voltage Sensor this.value = 454
+$$$$$ Voltage Sensor this.value = 456
+$$$$$ Voltage Sensor this.value = 460
+$$$$$ Voltage Sensor this.value = 464
+$$$$$ Voltage Sensor this.value = 464
+$$$$$ Voltage Sensor this.value = 461
+>>> ampSensor this.value = 467
+averageA1 = 466.5, tempVoltage = 2282.7947214076244, currAmperage = -14.013243780153267
+$$$$$ Voltage Sensor this.value = 456
+>>> ampSensor this.value = 466
+averageA1 = 466.5, tempVoltage = 2282.7947214076244, currAmperage = -14.013243780153267
+$$$$$ Voltage Sensor this.value = 459
+$$$$$ Voltage Sensor this.value = 463
+$$$$$ Voltage Sensor this.value = 467
+$$$$$ Voltage Sensor this.value = 461
+>>> ampSensor this.value = 467
+averageA1 = 466.5, tempVoltage = 2282.7947214076244, currAmperage = -14.013243780153267
+$$$$$ Voltage Sensor this.value = 456
+>>> ampSensor this.value = 466
+averageA1 = 466.5, tempVoltage = 2282.7947214076244, currAmperage = -14.013243780153267
+$$$$$ Voltage Sensor this.value = 463
+$$$$$ Voltage Sensor this.value = 465
+$$$$$ Voltage Sensor this.value = 462
+>>> ampSensor this.value = 468
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 459
+>>> ampSensor this.value = 466
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 458
+$$$$$ Voltage Sensor this.value = 462
+$$$$$ Voltage Sensor this.value = 468
+$$$$$ Voltage Sensor this.value = 466
+>>> ampSensor this.value = 467
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 460
+$$$$$ Voltage Sensor this.value = 455
+>>> ampSensor this.value = 466
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 462
+>>> ampSensor this.value = 467
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 468
+>>> ampSensor this.value = 466
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 465
+$$$$$ Voltage Sensor this.value = 460
+>>> ampSensor this.value = 467
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 455
+>>> ampSensor this.value = 466
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 457
+>>> ampSensor this.value = 467
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 466
+$$$$$ Voltage Sensor this.value = 468
+>>> ampSensor this.value = 466
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 463
+>>> ampSensor this.value = 468
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+$$$$$ Voltage Sensor this.value = 455
+>>> ampSensor this.value = 466
+averageA1 = 466.6, tempVoltage = 2283.2840664711634, currAmperage = -13.98167313089268
+^C$$$$$ Voltage Sensor this.value = 457
+on EXIT
+
+and 360 Watts out
+
 */
 
             // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
@@ -274,7 +536,7 @@ averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.6675432787
                 //});
 
                 voltageSensor.on("change", function () {
-                    log("$$$$$ Voltage Sensor this.value = "+this.value);
+                    //log("$$$$$ Voltage Sensor this.value = "+this.value);
 
                     // subtract the last reading:
                     totalA0 = totalA0 - readingsA0[indexA0];
@@ -300,7 +562,7 @@ averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.6675432787
                 });
 
                 ampSensor.on("change", function () {
-                    log(">>> ampSensor this.value = "+this.value);
+                    log(">>> A1 ampSensor this.value = "+this.value);
                     
                     // subtract the last reading:
                     totalA1 = totalA1 - readingsA1[indexA1];
@@ -323,7 +585,7 @@ averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.6675432787
                         // 11/30/2019 JJK - Adjustment to 5006
                         tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
                         currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
-                        log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
+                        //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
                         //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
                         //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
                         //const ACSoffset = 2500; 
@@ -398,7 +660,7 @@ function logMetric() {
     var date = new Date();
     var hours = date.getHours();
     if (hours > 5 && hours < 20) {
-        log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
+        //log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
 
         /*
         if (hours == 6 && prevHours > 18) {
