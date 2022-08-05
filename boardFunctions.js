@@ -562,7 +562,7 @@ and 360 Watts out
                 });
 
                 ampSensor.on("change", function () {
-                    log(">>> A1 ampSensor this.value = "+this.value);
+                    //log(">>> A1 ampSensor this.value = "+this.value);
                     
                     // subtract the last reading:
                     totalA1 = totalA1 - readingsA1[indexA1];
@@ -585,7 +585,7 @@ and 360 Watts out
                         // 11/30/2019 JJK - Adjustment to 5006
                         tempVoltage = (averageA1 / analogPinMax) * 5006; // Gets you mV    
                         currAmperage = ((tempVoltage - ACSoffset) / mVperAmp);
-                        //log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
+                        log("averageA1 = "+averageA1+", tempVoltage = "+tempVoltage+", currAmperage = "+currAmperage);
                         //averageA1 = 512.5, tempVoltage = 2509.8973607038124, currAmperage = 0.6385394002459619
                         //const mVperAmp = 15.5; // use 100 for 20A Module and 66 for 30A Module
                         //const ACSoffset = 2500; 
