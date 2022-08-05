@@ -223,6 +223,32 @@ Split core A3 = 497
 $$$$$ Voltage Sensor this.value = 241
 >>> ampSensor this.value = 518
 Split core A3 = 566
+
+
+averageA1 = 486.5, tempVoltage = 2380.6637341153473, currAmperage = -7.699113928042108
+averageA1 = 486.5, tempVoltage = 2380.6637341153473, currAmperage = -7.699113928042108
+averageA1 = 486.5, tempVoltage = 2380.6637341153473, currAmperage = -7.699113928042108
+averageA1 = 486.5, tempVoltage = 2380.6637341153473, currAmperage = -7.699113928042108
+averageA1 = 486.5, tempVoltage = 2380.6637341153473, currAmperage = -7.699113928042108
+averageA1 = 486.5, tempVoltage = 2380.6637341153473, currAmperage = -7.699113928042108
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+>>> logMetric, {"pvVolts":"28.32","pvAmps":"0.00","pvWatts":"0.00","pvWattsOut":"0.00","weather":803,"weatherTemp":78.98
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.4, tempVoltage = 2380.1743890518082, currAmperage = -7.730684577302694
+averageA1 = 486.5, tempVoltage = 2380.6637341153473, currAmperage = -7.699113928042108
+averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.667543278781552
+averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.667543278781552
+averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.667543278781552
+averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.667543278781552
+averageA1 = 486.6, tempVoltage = 2381.153079178886, currAmperage = -7.667543278781552
+
+
 */
 
             // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
@@ -248,7 +274,7 @@ Split core A3 = 566
                 //});
 
                 voltageSensor.on("change", function () {
-                    //log("$$$$$ Voltage Sensor this.value = "+this.value);
+                    log("$$$$$ Voltage Sensor this.value = "+this.value);
 
                     // subtract the last reading:
                     totalA0 = totalA0 - readingsA0[indexA0];
@@ -274,7 +300,7 @@ Split core A3 = 566
                 });
 
                 ampSensor.on("change", function () {
-                    //log(">>> ampSensor this.value = "+this.value);
+                    log(">>> ampSensor this.value = "+this.value);
                     
                     // subtract the last reading:
                     totalA1 = totalA1 - readingsA1[indexA1];
