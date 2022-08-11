@@ -1,6 +1,6 @@
 {
   "name": "jjk-energy-monitor",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Monitor solar energy system",
   "main": "server.js",
   "scripts": {
@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "dotenv": "latest",
-    "node-fetch": "^2.6.7",
-    "johnny-five": "^2.1.0"
+    "node-fetch": "^2.6.7"
   }
 }

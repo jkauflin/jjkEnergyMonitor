@@ -47,6 +47,10 @@ Modification History
 2022-05-15 JJK  Adding counter for duplicate values
 2022-07-31 JJK  Working on monitor for new panels setup
 2022-08-03 JJK  Got old sensors working for new setup
+2022-08-10 JJK  Giving up on trying to do my own sensoring, arduino, and
+                Pi, and just using a smart plug with open source monitoring
+                but still sending values to emoncms on my website
+                (see monitorLogging.js)
 =============================================================================*/
 const fetch = require('node-fetch');
 //import fetch from 'node-fetch';
@@ -162,27 +166,6 @@ function startBoard() {
         board.on("ready", function () {
             log("*** board ready ***")
         
-            /*
-            var led = new five.Led()
-            log(">>>>> blink default LED")
-            led.blink()
-            */
-
-            /*
-            log(">>>>>>> REBOOT <<<<<<<");
-            const { exec } = require('child_process');
-            exec('ls | reboot', (err, stdout, stderr) => {
-              if (err) {
-                //some err occurred
-                console.error(err)
-              } else {
-               // the *entire* stdout and stderr (buffered)
-               console.log(`stdout: ${stdout}`);
-               console.log(`stderr: ${stderr}`);
-              }
-            });
-            */
-
             // If the board is exiting, execute cleanup actions
             this.on("exit", function () {
                 log("on EXIT");
@@ -194,98 +177,10 @@ function startBoard() {
                 //cleanup actions
             });
         
-/*
-
-
-8/6/2022
-averageA1 = 618.4, averageA0 = 189.7
-averageA1 = 618.3, averageA0 = 188.4
-averageA1 = 617, averageA0 = 188.8
-averageA1 = 615.8, averageA0 = 189.9
-averageA1 = 617.4, averageA0 = 188.6
-averageA1 = 615.2, averageA0 = 188.6
-averageA1 = 616.4, averageA0 = 189.4
-averageA1 = 616.3, averageA0 = 187
-averageA1 = 616.6, averageA0 = 189.7
-averageA1 = 616.1, averageA0 = 187.8
-averageA1 = 618.8, averageA0 = 187.5
-averageA1 = 619.6, averageA0 = 185.1
-averageA1 = 620.8, averageA0 = 183.7
-averageA1 = 622.3, averageA0 = 183.9
-averageA1 = 622.8, averageA0 = 180.9
-averageA1 = 622.2, averageA0 = 182.1
-averageA1 = 623.7, averageA0 = 180.7
-averageA1 = 623.4, averageA0 = 181.2
-averageA1 = 624, averageA0 = 180.9
-averageA1 = 623.4, averageA0 = 180.9
-averageA1 = 622.9, averageA0 = 181.6
-averageA1 = 620.9, averageA0 = 183.7
-averageA1 = 618.3, averageA0 = 186.6
-averageA1 = 619.9, averageA0 = 184.8
-averageA1 = 617.2, averageA0 = 187.4
-averageA1 = 618.7, averageA0 = 187.2
-averageA1 = 618.4, averageA0 = 186.9
-averageA1 = 615.9, averageA0 = 188.7
-averageA1 = 618.1, averageA0 = 187
-averageA1 = 619.2, averageA0 = 185.6
-averageA1 = 617.9, averageA0 = 186.7
-averageA1 = 620, averageA0 = 183.9
-averageA1 = 619.6, averageA0 = 183.6
-averageA1 = 619.3, averageA0 = 184
-averageA1 = 621.8, averageA0 = 181.1
-averageA1 = 620.8, averageA0 = 181.4
-averageA1 = 620.8, averageA0 = 181
-averageA1 = 623.1, averageA0 = 178.8
-averageA1 = 622.1, averageA0 = 179.7
-averageA1 = 622.2, averageA0 = 179.6
-averageA1 = 621.6, averageA0 = 179.5
-averageA1 = 619.5, averageA0 = 182.1
-averageA1 = 622.2, averageA0 = 179.4
-averageA1 = 619.6, averageA0 = 181.6
-averageA1 = 619.6, averageA0 = 181.6
-averageA1 = 621.3, averageA0 = 181.6
-averageA1 = 619.1, averageA0 = 181.7
-averageA1 = 619.4, averageA0 = 182.3
-averageA1 = 617.8, averageA0 = 184.6
-averageA1 = 616.1, averageA0 = 185
-averageA1 = 617.9, averageA0 = 185.8
-averageA1 = 617.7, averageA0 = 186.2
-averageA1 = 617.2, averageA0 = 185.4
-averageA1 = 620.2, averageA0 = 185.4
-averageA1 = 617.5, averageA0 = 185.6
-averageA1 = 617.9, averageA0 = 186.4
-averageA1 = 617.7, averageA0 = 186.5
-averageA1 = 618, averageA0 = 186.2
-averageA1 = 619.7, averageA0 = 185
-averageA1 = 619.1, averageA0 = 185.4
-averageA1 = 619.3, averageA0 = 185.1
-averageA1 = 619.1, averageA0 = 185.2
-averageA1 = 618.8, averageA0 = 185.4
-averageA1 = 617.8, averageA0 = 186.5
-averageA1 = 618.1, averageA0 = 186.5
-averageA1 = 617.9, averageA0 = 187.2
-averageA1 = 617.4, averageA0 = 184.9
-averageA1 = 615.9, averageA0 = 186.9
-averageA1 = 617.2, averageA0 = 185.2
-averageA1 = 616.8, averageA0 = 183.5
-averageA1 = 616.3, averageA0 = 184.7
-averageA1 = 618.8, averageA0 = 182.4
-averageA1 = 618, averageA0 = 182.8
-averageA1 = 619.2, averageA0 = 181.7
-
-and about 500 Watts - out after inverter ()
-
-*/
 
             // Define the analog voltage sensors (after waiting a few seconds for things to calm down)
             this.wait(4*secondsToMilliseconds, function () {
                 log("$$$$$ Starting sensors");
-                /*
-                var voltageSensor2 = new five.Sensor("A3");
-                voltageSensor2.on("change", function () {
-                    log("Split core A3 = "+this.value)
-                });
-                */
 
                 voltageSensor = new five.Sensor("A0");
                 ampSensor = new five.Sensor("A1");
@@ -357,7 +252,6 @@ and about 500 Watts - out after inverter ()
 
                         //averageA1 = 201.9, tempVoltage = 987.9876832844575, currAmperage = -97.54918172358339
                         //>>> logMetric, {"pvVolts":"35.06","pvAmps":"0.00","pvWatts":"0.00","pvWattsOut":"0.00",
-                        
                     }
                 });
             });
