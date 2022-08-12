@@ -102,7 +102,6 @@ setTimeout(checkSensor, 10*secondsToMilliseconds);
 
 // Send metric values to a website
 function checkSensor() {
-    log("in the checkSensor");
     /*
         /sensor/kauf_plug_voltage
     {"id":"sensor-kauf_plug_voltage","state":"122.2 V","value":122.2453}
@@ -141,7 +140,7 @@ function checkSensor() {
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
-    //if (hours > 5 && hours < 20) {
+    if (hours > 5 && hours < 20) {
         //log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
         //log(`>>> logMetric, ${JSON.stringify(metricData)}`);
 
@@ -152,17 +151,24 @@ function checkSensor() {
             .then(res => res.json())
             //.then(json => console.log(json))
             .catch(err => handleFetchError(err));
-    //}
+    }
 
     // Set the next time the function will run
     setTimeout(checkSensor, metricInterval);
+}
+
+function handleFetchError(err) {
+    log(" >>> FETCH ERROR: "+err);
+
+    // Restart sensors if there is a Fetch error
+    //startBoard();
 }
 
 function fetchWeather() {
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
     var hours = date.getHours();
-    //if (hours > 5 && hours < 20) {
+    if (hours > 5 && hours < 20) {
         // Get local weather data from the open REST API
         fetch(WEATHER_URL)
             .then(checkResponseStatus)
@@ -176,7 +182,7 @@ function fetchWeather() {
                 metricData.weatherDateTime = json.dt;
             })
             .catch(err => handleFetchError(err));
-    //}
+    }
 
     setTimeout(fetchWeather, weatherInterval);
 }
