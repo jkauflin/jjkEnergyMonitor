@@ -152,7 +152,7 @@ function fetchWeather() {
         metricData.weatherDateTime = json.dt
     }).catch(err => handleFetchError(err));
 
-    log(`weatherTemp = ${metricData.weatherTemp}`)
+    //log(`weatherTemp = ${metricData.weatherTemp}`)
 
     setTimeout(fetchWeather, weatherInterval);
 }
