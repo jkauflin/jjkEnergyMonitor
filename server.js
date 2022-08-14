@@ -51,6 +51,7 @@ Modification History
 2022-08-10 JJK  Giving up on trying to do my own sensoring, arduino, and
                 Pi, and just using a smart plug with open source monitoring
                 but still sending values to emoncms on my website
+                (plug is a KAUF smart plug running ESPHome REST API)
 =============================================================================*/
 // Read environment variables from the .env file
 require('dotenv').config();
@@ -83,26 +84,25 @@ var metricData = {
 
 // General handler for any uncaught exceptions
 process.on('uncaughtException', function (e) {
-  console.log("UncaughtException, error = " + e);
-  console.error(e.stack);
-  // Stop the process
-  // 2017-12-29 JJK - Don't stop for now, just log the error
+    console.log("UncaughtException, error = " + e);
+    console.error(e.stack);
+    // Stop the process
+    // 2017-12-29 JJK - Don't stop for now, just log the error
 	//process.exit(1);
 });
 
-// Include the Arduino board functions
-//var boardFunctions = require('./boardFunctions.js');
 
 log("===== Starting Energy Monitor =====");
 // Start fetching weather after a few seconds
 setTimeout(fetchWeather, 5*secondsToMilliseconds);
+
 // Start sending metrics X seconds after starting
 setTimeout(checkSensor, 10*secondsToMilliseconds);
 
 
 // Send metric values to a website
 function checkSensor() {
-    /*
+    /* Example of the URL format and data available from the smart plub
         /sensor/kauf_plug_voltage
     {"id":"sensor-kauf_plug_voltage","state":"122.2 V","value":122.2453}
         /sensor/kauf_plug_current
@@ -111,31 +111,19 @@ function checkSensor() {
     {"id":"sensor-kauf_plug_power","state":"0.4 W","value":0.379758}
     */
 
-    // Call the REST API to get values from the smart plug sensor
-    fetch(SMART_PLUG_URL+'/sensor/kauf_plug_voltage')
-    .then(checkResponseStatus)
-    .then(res => res.json())
-    .then(json => {
+        // Call the REST API to get values from the smart plug sensor
+    fetch(SMART_PLUG_URL+'/sensor/kauf_plug_voltage').then(res => res.json()).then(json => {
         metricData.pvVolts = json.value.toFixed(2);
-    })
-    .catch(err => handleFetchError(err));
+    }).catch(err => handleFetchError(err));
 
-    fetch(SMART_PLUG_URL+'/sensor/kauf_plug_current')
-    .then(checkResponseStatus)
-    .then(res => res.json())
-    .then(json => {
+    fetch(SMART_PLUG_URL+'/sensor/kauf_plug_current').then(res => res.json()).then(json => {
         metricData.pvAmps = json.value.toFixed(2);
-    })
-    .catch(err => handleFetchError(err));
+    }).catch(err => handleFetchError(err));
 
-    fetch(SMART_PLUG_URL+'/sensor/kauf_plug_power')
-    .then(checkResponseStatus)
-    .then(res => res.json())
-    .then(json => {
+    fetch(SMART_PLUG_URL+'/sensor/kauf_plug_power').then(res => res.json()).then(json => {
         metricData.pvWatts = json.value.toFixed(2);
         metricData.pvWattsOut = json.value.toFixed(2);
-    })
-    .catch(err => handleFetchError(err));
+    }).catch(err => handleFetchError(err));
 
     // Use this if we need to limit the send to between the hours of 6 and 20
     var date = new Date();
@@ -146,47 +134,29 @@ function checkSensor() {
 
         // Send the data to the emoncms running on the website
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
-        fetch(emoncmsUrl)
-            .then(checkResponseStatus)
-            .then(res => res.json())
-            //.then(json => console.log(json))
-            .catch(err => handleFetchError(err));
+        fetch(emoncmsUrl).catch(err => handleFetchError(err));
     }
 
     // Set the next time the function will run
     setTimeout(checkSensor, metricInterval);
 }
 
-function handleFetchError(err) {
-    log(" >>> FETCH ERROR: "+err);
-
-    // Restart sensors if there is a Fetch error
-    //startBoard();
-}
-
 function fetchWeather() {
-    // Use this if we need to limit the send to between the hours of 6 and 20
-    var date = new Date();
-    var hours = date.getHours();
-    if (hours > 5 && hours < 20) {
-        // Get local weather data from the open REST API
-        fetch(WEATHER_URL)
-            .then(checkResponseStatus)
-            .then(res => res.json())
-            .then(json => {
-                metricData.weather = json.weather[0].id;
-                metricData.weatherTemp = json.main.temp;
-                metricData.weatherFeels = json.main.feels_like;
-                metricData.weatherPressure = json.main.pressure;
-                metricData.weatherHumidity = json.main.humidity;
-                metricData.weatherDateTime = json.dt;
-            })
-            .catch(err => handleFetchError(err));
-    }
+    // Get local weather data from the open REST API
+    //.then(checkResponseStatus)  *** why bother checking it if you are not going to do any thing ***
+    fetch(WEATHER_URL).then(res => res.json()).then(json => {
+        metricData.weather = json.weather[0].id
+        metricData.weatherTemp = json.main.temp
+        metricData.weatherFeels = json.main.feels_like
+        metricData.weatherPressure = json.main.pressure
+        metricData.weatherHumidity = json.main.humidity
+        metricData.weatherDateTime = json.dt
+    }).catch(err => handleFetchError(err));
 
     setTimeout(fetchWeather, weatherInterval);
 }
 
+/*
 function checkResponseStatus(res) {
     if(res.ok){
         //log(`Fetch reponse is OK: ${res.status} (${res.statusText})`);
@@ -196,6 +166,11 @@ function checkResponseStatus(res) {
         log(`Fetch reponse is NOT OK: ${res.status} (${res.statusText})`);
     }
 }
+*/
+function handleFetchError(err) {
+    //log(" >>> FETCH ERROR: "+err);
+}
+
 
 function log(inStr) {
     //var logStr = dateTime.create().format('Y-m-d H:M:S') + " " + inStr;
@@ -210,6 +185,8 @@ function log(inStr) {
         tempDay = '0' + td.getDate();
     }
     var formattedDate = td.getFullYear() + '-' + tempMonth + '-' + tempDay;
+
+    // Figure out a better way to get 0 padded values <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     //var dateStr = `${td.toDateString()} ${td.getHours()}:${td.getMinutes()}:${td.getSeconds()}.${td.getMilliseconds()}`;
     var dateStr = `${formattedDate} ${td.getHours()}:${td.getMinutes()}:${td.getSeconds()}.${td.getMilliseconds()}`;
