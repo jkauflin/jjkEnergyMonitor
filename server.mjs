@@ -54,9 +54,9 @@ Modification History
                 (plug is a KAUF smart plug running ESPHome REST API)
 =============================================================================*/
 // Read environment variables from the .env file
-require('dotenv').config();
-const fetch = require('node-fetch');
-//import fetch from 'node-fetch';
+import * as dotenv from 'dotenv'
+dotenv.config()
+import fetch from 'node-fetch';
 
 // Global variables
 const SMART_PLUG_URL = process.env.SMART_PLUG_URL;
@@ -143,7 +143,6 @@ function checkSensor() {
 
 function fetchWeather() {
     // Get local weather data from the open REST API
-    //.then(checkResponseStatus)  *** why bother checking it if you are not going to do any thing ***
     fetch(WEATHER_URL).then(res => res.json()).then(json => {
         metricData.weather = json.weather[0].id
         metricData.weatherTemp = json.main.temp
@@ -153,10 +152,13 @@ function fetchWeather() {
         metricData.weatherDateTime = json.dt
     }).catch(err => handleFetchError(err));
 
+    log(`weatherTemp = ${metricData.weatherTemp}`)
+
     setTimeout(fetchWeather, weatherInterval);
 }
 
 /*
+    //.then(checkResponseStatus)  *** why bother checking it if you are not going to do any thing ***
 function checkResponseStatus(res) {
     if(res.ok){
         //log(`Fetch reponse is OK: ${res.status} (${res.statusText})`);
@@ -171,25 +173,19 @@ function handleFetchError(err) {
     //log(" >>> FETCH ERROR: "+err);
 }
 
+function paddy(num, padlen, padchar) {
+    var pad_char = typeof padchar !== 'undefined' ? padchar : '0';
+    var pad = new Array(1 + padlen).join(pad_char);
+    return (pad + num).slice(-pad.length);
+}
+//var fu = paddy(14, 5); // 00014
+//var bar = paddy(2, 4, '#'); // ###2
 
 function log(inStr) {
-    //var logStr = dateTime.create().format('Y-m-d H:M:S') + " " + inStr;
-    var td = new Date();
-
-    var tempMonth = td.getMonth() + 1;
-    if (td.getMonth() < 9) {
-        tempMonth = '0' + (td.getMonth() + 1);
-    }
-    var tempDay = td.getDate();
-    if (td.getDate() < 10) {
-        tempDay = '0' + td.getDate();
-    }
-    var formattedDate = td.getFullYear() + '-' + tempMonth + '-' + tempDay;
-
-    // Figure out a better way to get 0 padded values <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-    //var dateStr = `${td.toDateString()} ${td.getHours()}:${td.getMinutes()}:${td.getSeconds()}.${td.getMilliseconds()}`;
-    var dateStr = `${formattedDate} ${td.getHours()}:${td.getMinutes()}:${td.getSeconds()}.${td.getMilliseconds()}`;
+    let td = new Date();
+    let tempMonth = td.getMonth() + 1;
+    let tempDay = td.getDate();
+    let formattedDate = td.getFullYear() + '-' + paddy(tempMonth,2) + '-' + paddy(tempDay,2);
+    var dateStr = `${formattedDate} ${paddy(td.getHours(),2)}:${paddy(td.getMinutes(),2)}:${paddy(td.getSeconds(),2)}.${td.getMilliseconds()}`;
     console.log(dateStr + " " + inStr);
-    //console.log(inStr);
 }

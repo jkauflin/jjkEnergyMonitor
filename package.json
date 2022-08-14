@@ -1,11 +1,11 @@
 {
   "name": "jjk-energy-monitor",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Monitor solar energy system",
-  "main": "server.js",
+  "main": "server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.mjs"
   },
   "author": "John J Kauflin",
   "license": "MIT",
@@ -16,6 +16,6 @@
   "dependencies": {
     "dotenv": "latest",
     "encoding": "^0.1.0",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^3.2.10"
   }
 }
