@@ -52,6 +52,7 @@ Modification History
                 Pi, and just using a smart plug with open source monitoring
                 but still sending values to emoncms on my website
                 (plug is a KAUF smart plug running ESPHome REST API)
+2022-09-10 JJK  Removed pvWattsOut because the watts is now post-inverter
 =============================================================================*/
 // Read environment variables from the .env file
 import * as dotenv from 'dotenv'
@@ -73,7 +74,6 @@ var metricData = {
     pvVolts: 0,
     pvAmps: 0,
     pvWatts: 0,
-    pvWattsOut: 0,
     weather: 0,
     weatherTemp: 0,
     weatherFeels: 0,
@@ -122,7 +122,6 @@ function checkSensor() {
 
     fetch(SMART_PLUG_URL+'/sensor/kauf_plug_power').then(res => res.json()).then(json => {
         metricData.pvWatts = json.value.toFixed(2);
-        metricData.pvWattsOut = json.value.toFixed(2);
     }).catch(err => handleFetchError(err));
 
     // Use this if we need to limit the send to between the hours of 6 and 20
