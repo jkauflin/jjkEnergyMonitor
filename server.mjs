@@ -1,5 +1,5 @@
 /*==============================================================================
-(C) Copyright 2016,2019,2021,2022 John J Kauflin, All rights reserved. 
+(C) Copyright 2016,2019,2021,2023 John J Kauflin, All rights reserved. 
 -----------------------------------------------------------------------------
 DESCRIPTION:  Monitor and logging program to get sensor data from a 
               smart plug monitoring the energy production of a grid-tie
@@ -129,7 +129,7 @@ function checkSensor() {
     var hours = date.getHours();
     if (hours > 5 && hours < 20) {
         //log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
-        //log(`>>> logMetric, ${JSON.stringify(metricData)}`);
+        log(`>>> logMetric, ${JSON.stringify(metricData)}`);
 
         // Send the data to the emoncms running on the website
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
