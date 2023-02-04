@@ -129,7 +129,7 @@ function checkSensor() {
     var hours = date.getHours();
     if (hours > 5 && hours < 20) {
         //log(`>>> logMetric, ${JSON.stringify(metricData).substring(0,105)}`);
-        log(`>>> logMetric, ${JSON.stringify(metricData)}`);
+        //log(`>>> logMetric, ${JSON.stringify(metricData)}`);
 
         // Send the data to the emoncms running on the website
         emoncmsUrl = EMONCMS_INPUT_URL+"&fulljson="+JSON.stringify(metricData);
