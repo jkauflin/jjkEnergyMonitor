@@ -57,6 +57,7 @@ Modification History
                 Windows background worker service on a windows box
                 (still trying to figure out how to access user secrets
                 through the dependency injected configuration object)
+2023-02-07 JJK  Corrected the error handling to not fail on errors
 =============================================================================*/
 
 using System.Text.Json;
@@ -94,29 +95,28 @@ public sealed class EmoncmsLogMetricsService
         var weatherUrl = _configuration.GetSection("WEATHER_URL").Value;
         */
 
-        // Call the weather OpenAPI to get weather value
-        jsonStr = "";
-        GetAsyncJson(weatherUrl).Wait();
-        if (!string.IsNullOrEmpty(jsonStr))
+        try
         {
-            /*
-            coord ValueKind=Object Value={"lon":-84.1123,"lat":39.8353}
-            weather ValueKind=Array Value=[{"id":801,"main":"Clouds","description":"few clouds","icon":"02d"}]
-            base ValueKind=String Value=stations
-            main ValueKind=Object Value={"temp":36.55,"feels_like":26.08,"temp_min":34.25,"temp_max":38.75,"pressure":1025,"":37}
-            visibility ValueKind=Number Value=10000
-            wind ValueKind=Object Value={"speed":19.57,"deg":190,"gust":25.32}
-            clouds ValueKind=Object Value={"all":20}
-            dt ValueKind=Number Value=1675534508
-            sys ValueKind=Object Value={"type":1,"id":4087,"country":"US","sunrise":1675514519,"sunset":1675551522}
-            timezone ValueKind=Number Value=-18000
-            id ValueKind=Number Value=0
-            name ValueKind=String Value=Dayton
-            cod ValueKind=Number Value=200
-            */
-
-            try
+            // Call the weather OpenAPI to get weather value
+            jsonStr = "";
+            GetAsyncJson(weatherUrl).Wait();
+            if (!string.IsNullOrEmpty(jsonStr))
             {
+                /*
+                coord ValueKind=Object Value={"lon":-84.1123,"lat":39.8353}
+                weather ValueKind=Array Value=[{"id":801,"main":"Clouds","description":"few clouds","icon":"02d"}]
+                base ValueKind=String Value=stations
+                main ValueKind=Object Value={"temp":36.55,"feels_like":26.08,"temp_min":34.25,"temp_max":38.75,"pressure":1025,"":37}
+                visibility ValueKind=Number Value=10000
+                wind ValueKind=Object Value={"speed":19.57,"deg":190,"gust":25.32}
+                clouds ValueKind=Object Value={"all":20}
+                dt ValueKind=Number Value=1675534508
+                sys ValueKind=Object Value={"type":1,"id":4087,"country":"US","sunrise":1675514519,"sunset":1675551522}
+                timezone ValueKind=Number Value=-18000
+                id ValueKind=Number Value=0
+                name ValueKind=String Value=Dayton
+                cod ValueKind=Number Value=200
+                */
                 var jsonRoot = JsonNode.Parse(jsonStr);
                 var weather = jsonRoot["weather"][0];
                 metricData.weather = (int)weather["id"];
@@ -127,83 +127,53 @@ public sealed class EmoncmsLogMetricsService
                 metricData.weatherHumidity = (int)weatherMain["humidity"];
                 metricData.weatherDateTime = (int)jsonRoot["dt"];
             }
-            catch (Exception ex)
-            {
-                // Ignore errors for now
-            }
 
-        }
-
-        // Call the REST API to get values from the smart plug sensor
-        /* Example of the URL format and data available from the smart plub
-            /sensor/kauf_plug_voltage
-        {"id":"sensor-kauf_plug_voltage","state":"122.2 V","value":122.2453}
-            /sensor/kauf_plug_current
-        {"id":"sensor-kauf_plug_current","state":"0.03 A","value":0.026108}
-            /sensor/kauf_plug_power
-        {"id":"sensor-kauf_plug_power","state":"0.4 W","value":0.379758}
-        */
-        jsonStr = "";
-        GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_voltage").Wait();
-        if (!string.IsNullOrEmpty(jsonStr))
-        {
-            try
+            // Call the REST API to get values from the smart plug sensor
+            /* Example of the URL format and data available from the smart plub
+                /sensor/kauf_plug_voltage
+            {"id":"sensor-kauf_plug_voltage","state":"122.2 V","value":122.2453}
+                /sensor/kauf_plug_current
+            {"id":"sensor-kauf_plug_current","state":"0.03 A","value":0.026108}
+                /sensor/kauf_plug_power
+            {"id":"sensor-kauf_plug_power","state":"0.4 W","value":0.379758}
+            */
+            jsonStr = "";
+            GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_voltage").Wait();
+            if (!string.IsNullOrEmpty(jsonStr))
             {
                 var jsonRoot = JsonNode.Parse(jsonStr);
                 var tempFloat = (float)jsonRoot["value"];
                 metricData.pvVolts = tempFloat.ToString("n2");
             }
-            catch (Exception ex)
-            {
-                // Ignore errors for now
-            }
-        }
-        jsonStr = "";
-        GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_current").Wait();
-        if (!string.IsNullOrEmpty(jsonStr))
-        {
-            try
+            jsonStr = "";
+            GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_current").Wait();
+            if (!string.IsNullOrEmpty(jsonStr))
             {
                 var jsonRoot = JsonNode.Parse(jsonStr);
                 var tempFloat = (float)jsonRoot["value"];
                 metricData.pvAmps = tempFloat.ToString("n2");
             }
-            catch (Exception ex)
-            {
-                // Ignore errors for now
-            }
-
-        }
-        jsonStr = "";
-        GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_power").Wait();
-        if (!string.IsNullOrEmpty(jsonStr))
-        {
-            try
+            jsonStr = "";
+            GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_power").Wait();
+            if (!string.IsNullOrEmpty(jsonStr))
             {
                 var jsonRoot = JsonNode.Parse(jsonStr);
                 var tempFloat = (float)jsonRoot["value"];
                 metricData.pvWatts = tempFloat.ToString("n2");
             }
-            catch (Exception ex)
-            {
-                // Ignore errors for now
-            }
-        }
 
-        // Use this if we need to limit the send to between the hours of 6 and 20
-        int currHour = DateTime.Now.Hour;
-        if (currHour > 5 && currHour < 20)
-        {
-            try
+            // Use this if we need to limit the send to between the hours of 6 and 20
+            int currHour = DateTime.Now.Hour;
+            if (currHour > 5 && currHour < 20)
             {
                 var tempUrl = emoncmsInputUrl + "&fulljson=" + JsonSerializer.Serialize<MetricData>(metricData);
                 // Send the data to the emoncms running on the website
                 GetAsync(tempUrl).Wait();
             }
-            catch (Exception ex)
-            {
-                // Ignore errors for now
-            }
+        }
+        catch (Exception ex)
+        {
+            // Ignore errors for now
         }
 
         return metricData;
