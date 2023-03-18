@@ -58,6 +58,7 @@ Modification History
                 (still trying to figure out how to access user secrets
                 through the dependency injected configuration object)
 2023-02-07 JJK  Corrected the error handling to not fail on errors
+2023-03-18 JJK  Corrected pvWatts conversion from "n2" to "F2"
 =============================================================================*/
 
 using System.Text.Json;
@@ -143,7 +144,7 @@ public sealed class EmoncmsLogMetricsService
             {
                 var jsonRoot = JsonNode.Parse(jsonStr);
                 var tempFloat = (float)jsonRoot["value"];
-                metricData.pvVolts = tempFloat.ToString("n2");
+                metricData.pvVolts = tempFloat.ToString("F2");
             }
             jsonStr = "";
             GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_current").Wait();
@@ -151,7 +152,7 @@ public sealed class EmoncmsLogMetricsService
             {
                 var jsonRoot = JsonNode.Parse(jsonStr);
                 var tempFloat = (float)jsonRoot["value"];
-                metricData.pvAmps = tempFloat.ToString("n2");
+                metricData.pvAmps = tempFloat.ToString("F2");
             }
             jsonStr = "";
             GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_power").Wait();
@@ -159,7 +160,8 @@ public sealed class EmoncmsLogMetricsService
             {
                 var jsonRoot = JsonNode.Parse(jsonStr);
                 var tempFloat = (float)jsonRoot["value"];
-                metricData.pvWatts = tempFloat.ToString("n2");
+                //metricData.pvWatts = tempFloat.ToString("n2");
+                metricData.pvWatts = tempFloat.ToString("F2");
             }
 
             // Use this if we need to limit the send to between the hours of 6 and 20
