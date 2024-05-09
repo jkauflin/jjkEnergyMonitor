@@ -21,18 +21,19 @@ public sealed class WindowsBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        int intervalSeconds = 10;
-        string? smartPlugUrl;
-        string? weatherUrl;
-        string? emoncmsInputUrl;
-        string? jjkwebStorageConnStr;
-        string? azureDBEndpointUri;
-        string? azureDBPrimaryKey;
+        int intervalSeconds = 15;
+        string? smartPlugUrl = "";
+        string? weatherUrl = "";
+        string? emoncmsInputUrl = "";
+        string? jjkwebStorageConnStr = "";
+        string? azureDBEndpointUri = "";
+        string? azureDBPrimaryKey = "";
 
         CosmosClient cosmosClient;
 
         try
         {
+            /*
             // Get configuration parameters from the Secrets JSON (not checked into source code control)
             IConfigurationRoot config = new ConfigurationBuilder()
                 .AddUserSecrets<Program>()
@@ -47,6 +48,41 @@ public sealed class WindowsBackgroundService : BackgroundService
             emoncmsInputUrl = config["EMONCMS_INPUT_URL"];
             azureDBEndpointUri = config["AzureDBEndpointUri"];
             azureDBPrimaryKey = config["AzureDBPrimaryKey"];
+            */
+
+            int pos = 0;
+            string tempStr;
+            //foreach (string line in File.ReadLines("D:/Projects/jjkEnergyMonitor/.env"))
+            foreach (string line in File.ReadLines("E:/jjkPublish/.env"))
+            {
+                pos = line.IndexOf('=');
+                tempStr = line.Substring(pos + 1);
+                if (line.Contains("INTERVAL_SECONDS"))
+                {
+                    intervalSeconds = int.Parse(tempStr);
+                }
+                else if (line.Contains("SMART_PLUG_URL"))
+                {
+                    smartPlugUrl = tempStr;
+                }
+                else if (line.Contains("EMONCMS_INPUT_URL"))
+                {
+                    emoncmsInputUrl = tempStr;
+                }
+                else if (line.Contains("AzureDBEndpointUri"))
+                {
+                    azureDBEndpointUri = tempStr;
+                }
+                else if (line.Contains("AzureDBPrimaryKey"))
+                {
+                    azureDBPrimaryKey = tempStr;
+                }
+            }
+
+            if (string.IsNullOrEmpty(azureDBEndpointUri) || string.IsNullOrEmpty(azureDBPrimaryKey))
+            {
+                throw new Exception("Azure credentials are NULL");
+            }
 
             // Create a new instance of the Cosmos Client
             cosmosClient = new CosmosClient(azureDBEndpointUri, azureDBPrimaryKey,
