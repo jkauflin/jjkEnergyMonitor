@@ -1,4 +1,10 @@
 
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel;
+using System.Net;
+using Microsoft.Azure.Cosmos;
+using Container = Microsoft.Azure.Cosmos.Container;
+
 namespace App.WindowsService;
 
 public sealed class WindowsBackgroundService : BackgroundService
@@ -16,58 +22,82 @@ public sealed class WindowsBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         int intervalSeconds = 10;
-        string smartPlugUrl = "";
-        string emoncmsInputUrl = "";
-        string weatherUrl = "";
+        string? smartPlugUrl;
+        string? weatherUrl;
+        string? emoncmsInputUrl;
+        string? jjkwebStorageConnStr;
+        string? azureDBEndpointUri;
+        string? azureDBPrimaryKey;
+
+        CosmosClient cosmosClient;
+
         try
         {
-            /*
-            string intervalSecsStr = _configuration.GetSection("INTERVAL_SECONDS").Value;
-            if (string.IsNullOrEmpty(intervalSecsStr))
+            // Get configuration parameters from the Secrets JSON (not checked into source code control)
+            IConfigurationRoot config = new ConfigurationBuilder()
+                .AddUserSecrets<Program>()
+                .Build();
+            string intervalSecsStr = config["INTERVAL_SECONDS"];
+            if (!string.IsNullOrEmpty(intervalSecsStr))
             {
-                throw new Exception("Configuration INTERVAL_SECONDS is NULL");
+                //throw new Exception("Configuration INTERVAL_SECONDS is NULL");
+                intervalSeconds = int.Parse(intervalSecsStr);
             }
-            int intervalSeconds = int.Parse(intervalSecsStr);
-            */
-            int pos = 0;
-            string tempStr;
-            //foreach (string line in File.ReadLines("D:/Projects/jjkEnergyMonitor/.env"))
-            foreach (string line in File.ReadLines("E:/jjkPublish/.env"))
-            {
-                pos = line.IndexOf('=');
-                tempStr = line.Substring(pos + 1);
-                if (line.Contains("INTERVAL_SECONDS"))
-                {
-                    intervalSeconds = int.Parse(tempStr);
-                }
-                else if (line.Contains("SMART_PLUG_URL"))
-                {
-                    smartPlugUrl = tempStr;
-                }
-                else if (line.Contains("EMONCMS_INPUT_URL"))
-                {
-                    emoncmsInputUrl = tempStr;
-                }
-                else if (line.Contains("WEATHER_URL"))
-                {
-                    weatherUrl = tempStr;
-                }
-            }
+            smartPlugUrl = config["SMART_PLUG_URL"];
+            emoncmsInputUrl = config["EMONCMS_INPUT_URL"];
+            azureDBEndpointUri = config["AzureDBEndpointUri"];
+            azureDBPrimaryKey = config["AzureDBPrimaryKey"];
 
+            // Create a new instance of the Cosmos Client
+            cosmosClient = new CosmosClient(azureDBEndpointUri, azureDBPrimaryKey,
+                new CosmosClientOptions()
+                {
+                    ApplicationName = "jjkEnergyMonitor"
+                }
+            );
+
+            // Use the Cosmos Client to construct objects for the Point and Total containers
+            Container metricPointContainer = cosmosClient.GetContainer("MetricsDB", "MetricPoint");
+            Container metricTotalContainer = cosmosClient.GetContainer("MetricsDB", "MetricTotal");
+
+            // Construct the data object to hold values between calls
             var metricData = new MetricData();
-            metricData.pvVolts = "";
-            metricData.pvAmps = "";
-            metricData.pvWatts = "";
-            metricData.weather = 0;
-            metricData.weatherTemp = 0.0F;
-            metricData.weatherFeels = 0.0F;
-            metricData.weatherPressure = 0;
-            metricData.weatherHumidity = 0;
-            metricData.weatherDateTime = 0;
+            metricData.metricDateTime = DateTime.Now;
+            metricData.plug_voltage = 0.0f;
+            metricData.plug_current = 0.0f;
+            metricData.plug_power = 0.0f;
+            metricData.kWh_bucket_DAY = 0.0f;
+            metricData.kWh_bucket_YEAR = 0.0f;
 
+            // Get the current DAY and YEAR totals
+            int dayVal = int.Parse(metricData.metricDateTime.ToString("yyyyMMdd"));
+            var queryText = $"SELECT * FROM c WHERE c.id = \"DAY\" AND c.TotalBucket = {dayVal} ";
+            var feed = metricTotalContainer.GetItemQueryIterator<MetricTotal>(queryText);
+            while (feed.HasMoreResults)
+            {
+                var response = await feed.ReadNextAsync();
+                foreach (var item in response)
+                {
+                    metricData.kWh_bucket_DAY = float.Parse(item.TotalValue);
+                }
+            }
+
+            dayVal = int.Parse(metricData.metricDateTime.ToString("yyyy"));
+            queryText = $"SELECT * FROM c WHERE c.id = \"DAY\" AND c.TotalBucket = {dayVal} ";
+            feed = metricTotalContainer.GetItemQueryIterator<MetricTotal>(queryText);
+            while (feed.HasMoreResults)
+            {
+                var response = await feed.ReadNextAsync();
+                foreach (var item in response)
+                {
+                    metricData.kWh_bucket_YEAR = float.Parse(item.TotalValue);
+                }
+            }
+
+            // Call the metric log service in a loop until stop requested
             while (!stoppingToken.IsCancellationRequested)
             {
-                metricData = _logMetricsService.LogMetrics(metricData, smartPlugUrl, emoncmsInputUrl, weatherUrl);
+                metricData = _logMetricsService.LogMetrics(metricData, metricPointContainer, metricTotalContainer, smartPlugUrl, emoncmsInputUrl);
 
                 //_logger.LogWarning("Metrics successfully logged to EMONCMS");
                 await Task.Delay(TimeSpan.FromSeconds(intervalSeconds), stoppingToken);

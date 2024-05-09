@@ -59,10 +59,19 @@ Modification History
                 through the dependency injected configuration object)
 2023-02-07 JJK  Corrected the error handling to not fail on errors
 2023-03-18 JJK  Corrected pvWatts conversion from "n2" to "F2"
+-----------------------------------------------------------------------------
+2024-05-02 JJK  Modified to update metrics into Azure Cosmos DB NoSQL
+                entities as part of migration of website to Azue SWA
+2024-05-09 JJK  Completed development to log the point and total entities
+                into the Cosmos DB containers
 =============================================================================*/
 
+using Microsoft.Azure.Cosmos;
+using System.ComponentModel;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Container = Microsoft.Azure.Cosmos.Container;
 
 namespace App.WindowsService;
 
@@ -86,49 +95,32 @@ public sealed class EmoncmsLogMetricsService
         jsonStr = await response.Content.ReadAsStringAsync();
     }
 
-    //public string LogMetrics(IConfiguration _configuration)
-    public MetricData LogMetrics(MetricData metricData, string smartPlugUrl, string emoncmsInputUrl, string weatherUrl)
+    private float getFloatValue(string jsonStr)
     {
-        // Get values from user secrets
-        /*
-        var smartPlugUrl = _configuration.GetSection("SMART_PLUG_URL").Value;
-        var emoncmsInputUrl = _configuration.GetSection("EMONCMS_INPUT_URL").Value;
-        var weatherUrl = _configuration.GetSection("WEATHER_URL").Value;
-        */
+        float tempFloat = 0.0f;
+        if (!string.IsNullOrEmpty(jsonStr))
+        {
+            var jsonRoot = JsonNode.Parse(jsonStr);
+            tempFloat = (float)jsonRoot["value"];
+        }
+        return tempFloat;
+    }
+
+
+    public MetricData LogMetrics(MetricData metricData, Container metricPointContainer, Container metricTotalContainer, string smartPlugUrl, string emoncmsInputUrl)
+    {
+        // Limit the metric send to between the hours of 6:00am and 9:00pm
+        int currHour = DateTime.Now.Hour;
+        if (currHour < 6 || currHour >= 21)
+        {
+            return metricData;
+        }
+
+        var prev_plug_power = metricData.plug_power;
+        var prev_metricDateTime = metricData.metricDateTime;
 
         try
         {
-            // Call the weather OpenAPI to get weather value
-            jsonStr = "";
-            GetAsyncJson(weatherUrl).Wait();
-            if (!string.IsNullOrEmpty(jsonStr))
-            {
-                /*
-                coord ValueKind=Object Value={"lon":-84.1123,"lat":39.8353}
-                weather ValueKind=Array Value=[{"id":801,"main":"Clouds","description":"few clouds","icon":"02d"}]
-                base ValueKind=String Value=stations
-                main ValueKind=Object Value={"temp":36.55,"feels_like":26.08,"temp_min":34.25,"temp_max":38.75,"pressure":1025,"":37}
-                visibility ValueKind=Number Value=10000
-                wind ValueKind=Object Value={"speed":19.57,"deg":190,"gust":25.32}
-                clouds ValueKind=Object Value={"all":20}
-                dt ValueKind=Number Value=1675534508
-                sys ValueKind=Object Value={"type":1,"id":4087,"country":"US","sunrise":1675514519,"sunset":1675551522}
-                timezone ValueKind=Number Value=-18000
-                id ValueKind=Number Value=0
-                name ValueKind=String Value=Dayton
-                cod ValueKind=Number Value=200
-                */
-                var jsonRoot = JsonNode.Parse(jsonStr);
-                var weather = jsonRoot["weather"][0];
-                metricData.weather = (int)weather["id"];
-                var weatherMain = jsonRoot["main"];
-                metricData.weatherTemp = (float)weatherMain["temp"];
-                metricData.weatherFeels = (float)weatherMain["feels_like"];
-                metricData.weatherPressure = (int)weatherMain["pressure"];
-                metricData.weatherHumidity = (int)weatherMain["humidity"];
-                metricData.weatherDateTime = (int)jsonRoot["dt"];
-            }
-
             // Call the REST API to get values from the smart plug sensor
             /* Example of the URL format and data available from the smart plub
                 /sensor/kauf_plug_voltage
@@ -138,40 +130,89 @@ public sealed class EmoncmsLogMetricsService
                 /sensor/kauf_plug_power
             {"id":"sensor-kauf_plug_power","state":"0.4 W","value":0.379758}
             */
+            metricData.plug_voltage = 0.0f;
+            metricData.plug_current = 0.0f;
+            metricData.plug_power = 0.0f;
+
+            // Get the values by making a RESTful call to the smart plug on the local network
             jsonStr = "";
             GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_voltage").Wait();
-            if (!string.IsNullOrEmpty(jsonStr))
-            {
-                var jsonRoot = JsonNode.Parse(jsonStr);
-                var tempFloat = (float)jsonRoot["value"];
-                metricData.pvVolts = tempFloat.ToString("F2");
-            }
+            metricData.plug_voltage = getFloatValue(jsonStr);
             jsonStr = "";
             GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_current").Wait();
-            if (!string.IsNullOrEmpty(jsonStr))
-            {
-                var jsonRoot = JsonNode.Parse(jsonStr);
-                var tempFloat = (float)jsonRoot["value"];
-                metricData.pvAmps = tempFloat.ToString("F2");
-            }
+            metricData.plug_current = getFloatValue(jsonStr);
             jsonStr = "";
             GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_power").Wait();
-            if (!string.IsNullOrEmpty(jsonStr))
+            metricData.plug_power = getFloatValue(jsonStr);
+
+            metricData.metricDateTime = DateTime.Now;
+
+            MetricPoint metricPoint = new MetricPoint
             {
-                var jsonRoot = JsonNode.Parse(jsonStr);
-                var tempFloat = (float)jsonRoot["value"];
-                //metricData.pvWatts = tempFloat.ToString("n2");
-                metricData.pvWatts = tempFloat.ToString("F2");
+                id = Guid.NewGuid().ToString(),
+                PointDay = int.Parse(metricData.metricDateTime.ToString("yyyyMMdd")),
+                PointDateTime = metricData.metricDateTime,
+                PointYearMonth = int.Parse(metricData.metricDateTime.ToString("yyyyMM")),
+                PointDayTime = int.Parse(metricData.metricDateTime.ToString("yyHHmmss")),
+                pvVolts = metricData.plug_voltage.ToString("F2"),
+                pvAmps = metricData.plug_current.ToString("F2"),
+                pvWatts = metricData.plug_power.ToString("F2")
+            };
+
+            // Insert a new entity into the Cosmos DB Metric Point container
+            metricPointContainer.CreateItemAsync<MetricPoint>(metricPoint, new PartitionKey(metricPoint.PointDay));
+
+            // After the 1st call, calculate the power since the last call and add it to the DAY and YEAR buckets
+            if (prev_plug_power > 0.00f)
+            {
+                TimeSpan metricDuration = metricData.metricDateTime - prev_metricDateTime;
+
+                float powerDiff = (float)(Math.Abs(metricData.plug_power - prev_plug_power) / 2.0);
+                float durationPower = prev_plug_power + powerDiff;
+                if (prev_plug_power > metricData.plug_power)
+                {
+                    durationPower = metricData.plug_power + powerDiff;
+                }
+
+                metricData.kWh_bucket_DAY += (durationPower / 1000) * (float)metricDuration.TotalHours;
+                metricData.kWh_bucket_YEAR += (durationPower / 1000) * (float)metricDuration.TotalHours;
+
+                //Console.WriteLine("");
+                //Console.WriteLine($"{metricData.metricDateTime.ToString("MM/dd/yyyy HH:mm:ss")}, power = {metricData.plug_power}, prev = {prev_plug_power}");
+                //Console.WriteLine($"    duration (TotalHours) = {metricDuration.TotalHours}, power = {durationPower}, kWh = {(durationPower / 1000 * metricDuration.TotalHours)}");
+                //Console.WriteLine($"    metricData.kWh_bucket_DAY  = {metricData.kWh_bucket_DAY} ");
+                //Console.WriteLine($"    metricData.kWh_bucket_YEAR = {metricData.kWh_bucket_YEAR} ");
+
+                // Update the DAY bucket Total
+                MetricTotal metricTotal = new MetricTotal
+                {
+                    id = "DAY",
+                    TotalBucket = int.Parse(metricData.metricDateTime.ToString("yyyyMMdd")),
+                    LastUpdateDateTime = metricData.metricDateTime,
+                    TotalValue = metricData.kWh_bucket_DAY.ToString("F2")
+                };
+                metricTotalContainer.UpsertItemAsync<MetricTotal>(metricTotal, new PartitionKey(metricTotal.TotalBucket));
+
+                // Update the YEAR bucket Total
+                metricTotal = new MetricTotal
+                {
+                    id = "YEAR",
+                    TotalBucket = int.Parse(metricData.metricDateTime.ToString("yyyy")),
+                    LastUpdateDateTime = metricData.metricDateTime,
+                    TotalValue = metricData.kWh_bucket_YEAR.ToString("F2")
+                };
+                metricTotalContainer.UpsertItemAsync<MetricTotal>(metricTotal, new PartitionKey(metricTotal.TotalBucket));
             }
 
-            // Use this if we need to limit the send to between the hours of 6 and 20
-            int currHour = DateTime.Now.Hour;
-            if (currHour > 5 && currHour < 20)
-            {
-                var tempUrl = emoncmsInputUrl + "&fulljson=" + JsonSerializer.Serialize<MetricData>(metricData);
-                // Send the data to the emoncms running on the website
-                GetAsync(tempUrl).Wait();
-            }
+            MetricDataOld metricDataOld = new MetricDataOld();
+            metricDataOld.pvVolts = metricData.plug_voltage.ToString("F2");
+            metricDataOld.pvAmps = metricData.plug_current.ToString("F2");
+            metricDataOld.pvWatts = metricData.plug_power.ToString("F2");
+
+            var tempUrl = emoncmsInputUrl + "&fulljson=" + JsonSerializer.Serialize<MetricDataOld>(metricDataOld);
+
+            // Send the data to the emoncms running on the website
+            GetAsync(tempUrl).Wait();
         }
         catch (Exception ex)
         {
