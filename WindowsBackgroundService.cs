@@ -83,7 +83,7 @@ public sealed class WindowsBackgroundService : BackgroundService
             }
 
             dayVal = int.Parse(metricData.metricDateTime.ToString("yyyy"));
-            queryText = $"SELECT * FROM c WHERE c.id = \"DAY\" AND c.TotalBucket = {dayVal} ";
+            queryText = $"SELECT * FROM c WHERE c.id = \"YEAR\" AND c.TotalBucket = {dayVal} ";
             feed = metricTotalContainer.GetItemQueryIterator<MetricTotal>(queryText);
             while (feed.HasMoreResults)
             {

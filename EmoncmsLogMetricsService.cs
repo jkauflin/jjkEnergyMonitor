@@ -98,7 +98,7 @@ public sealed class EmoncmsLogMetricsService
     private float getFloatValue(string jsonStr)
     {
         float tempFloat = 0.0f;
-        if (!string.IsNullOrEmpty(jsonStr))
+        if (!string.IsNullOrEmpty(jsonStr) || !jsonStr.Contains("null"))
         {
             var jsonRoot = JsonNode.Parse(jsonStr);
             tempFloat = (float)jsonRoot["value"];
