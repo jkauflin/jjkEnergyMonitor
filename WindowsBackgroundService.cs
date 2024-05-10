@@ -93,8 +93,8 @@ public sealed class WindowsBackgroundService : BackgroundService
             );
 
             // Use the Cosmos Client to construct objects for the Point and Total containers
-            Container metricPointContainer = cosmosClient.GetContainer("MetricsDB", "MetricPoint");
-            Container metricTotalContainer = cosmosClient.GetContainer("MetricsDB", "MetricTotal");
+            Container metricPointContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricPoint");
+            Container metricTotalContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricTotal");
 
             // Construct the data object to hold values between calls
             var metricData = new MetricData();
