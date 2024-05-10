@@ -111,6 +111,11 @@ public sealed class EmoncmsLogMetricsService
     {
         // Limit the metric send to between the hours of 6:00am and 9:00pm
         int currHour = DateTime.Now.Hour;
+        if (currHour < 6)
+        {
+            // Reset the DAY bucket in the morning
+            metricData.kWh_bucket_DAY = 0;
+        }
         if (currHour < 6 || currHour >= 21)
         {
             return metricData;
