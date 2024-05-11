@@ -174,9 +174,9 @@ public sealed class EmoncmsLogMetricsService
                 PointDateTime = metricData.metricDateTime,
                 PointYearMonth = int.Parse(metricData.metricDateTime.ToString("yyyyMM")),
                 PointDayTime = int.Parse(metricData.metricDateTime.ToString("yyHHmmss")),
-                pvVolts = metricData.plug_voltage.ToString("F2"),
-                pvAmps = metricData.plug_current.ToString("F2"),
-                pvWatts = metricData.plug_power.ToString("F2")
+                pvVolts = metricData.plug_voltage.ToString("F3"),
+                pvAmps = metricData.plug_current.ToString("F3"),
+                pvWatts = metricData.plug_power.ToString("F3)
             };
 
             // Insert a new entity into the Cosmos DB Metric Point container
@@ -212,7 +212,7 @@ public sealed class EmoncmsLogMetricsService
                     id = "DAY",
                     TotalBucket = int.Parse(metricData.metricDateTime.ToString("yyyyMMdd")),
                     LastUpdateDateTime = metricData.metricDateTime,
-                    TotalValue = metricData.kWh_bucket_DAY.ToString("F2")
+                    TotalValue = metricData.kWh_bucket_DAY.ToString("F3")
                 };
                 metricTotalContainer.UpsertItemAsync<MetricTotal>(metricTotal, new PartitionKey(metricTotal.TotalBucket));
 
@@ -222,7 +222,7 @@ public sealed class EmoncmsLogMetricsService
                     id = "YEAR",
                     TotalBucket = int.Parse(metricData.metricDateTime.ToString("yyyy")),
                     LastUpdateDateTime = metricData.metricDateTime,
-                    TotalValue = metricData.kWh_bucket_YEAR.ToString("F2")
+                    TotalValue = metricData.kWh_bucket_YEAR.ToString("F3")
                 };
                 metricYearTotalContainer.UpsertItemAsync<MetricYearTotal>(metricYearTotal, new PartitionKey(metricYearTotal.TotalBucket));
             }
