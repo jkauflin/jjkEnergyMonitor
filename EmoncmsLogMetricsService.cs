@@ -222,7 +222,7 @@ public sealed class EmoncmsLogMetricsService
                     id = "YEAR",
                     TotalBucket = int.Parse(metricData.metricDateTime.ToString("yyyy")),
                     LastUpdateDateTime = metricData.metricDateTime,
-                    TotalValue = metricData.kWh_bucket_YEAR.ToString("F3")
+                    TotalValue = metricData.kWh_bucket_YEAR.ToString("F3") // fixed
                 };
                 metricYearTotalContainer.UpsertItemAsync<MetricYearTotal>(metricYearTotal, new PartitionKey(metricYearTotal.TotalBucket));
             }
