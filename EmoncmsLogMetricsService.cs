@@ -64,11 +64,15 @@ Modification History
                 entities as part of migration of website to Azue SWA
 2024-05-09 JJK  Completed development to log the point and total entities
                 into the Cosmos DB containers
+2024-05-10 JJK  Went back to using a .env file for configuration parameters
+                because User Secrets is only for Development (not Production)
+2024-05-11 JJK  Made adjustments to the containers and the kWh calc
 =============================================================================*/
 
 using Microsoft.Azure.Cosmos;
 using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Container = Microsoft.Azure.Cosmos.Container;
@@ -111,14 +115,21 @@ public sealed class EmoncmsLogMetricsService
     }
 
 
-    public MetricData LogMetrics(MetricData metricData, Container metricPointContainer, Container metricTotalContainer, string smartPlugUrl, string emoncmsInputUrl)
+    public MetricData LogMetrics(MetricData metricData, Container metricPointContainer, Container metricTotalContainer, Container metricYearTotalContainer, string smartPlugUrl, string emoncmsInputUrl)
     {
         // Limit the metric send to between the hours of 6:00am and 9:00pm
-        int currHour = DateTime.Now.Hour;
+        DateTime currDateTime = DateTime.Now;
+        int currHour = currDateTime.Hour;
         if (currHour < 6)
         {
             // Reset the DAY bucket in the morning
-            metricData.kWh_bucket_DAY = 0;
+            metricData.kWh_bucket_DAY = 0.0f;
+
+            // Reset the YEAR bucket on the morning of the 1st day of the year
+            if (currDateTime.Month == 1 && currDateTime.Day == 1)
+            {
+                metricData.kWh_bucket_YEAR = 0.0f;
+            }
         }
         if (currHour < 6 || currHour >= 21)
         {
@@ -176,21 +187,24 @@ public sealed class EmoncmsLogMetricsService
             {
                 TimeSpan metricDuration = metricData.metricDateTime - prev_metricDateTime;
 
-                float powerDiff = (float)(Math.Abs(metricData.plug_power - prev_plug_power) / 2.0);
+                //float powerDiff = (float)(Math.Abs(metricData.plug_power - prev_plug_power) / 2.0);
+                float powerDiff = (float)(Math.Abs(metricData.plug_power - prev_plug_power) / 1.5);
                 float durationPower = prev_plug_power + powerDiff;
                 if (prev_plug_power > metricData.plug_power)
                 {
                     durationPower = metricData.plug_power + powerDiff;
                 }
 
-                metricData.kWh_bucket_DAY += (durationPower / 1000) * (float)metricDuration.TotalHours;
-                metricData.kWh_bucket_YEAR += (durationPower / 1000) * (float)metricDuration.TotalHours;
+                float tempkWh = (durationPower / 1000) * (float)metricDuration.TotalHours;
 
-                //Console.WriteLine("");
-                //Console.WriteLine($"{metricData.metricDateTime.ToString("MM/dd/yyyy HH:mm:ss")}, power = {metricData.plug_power}, prev = {prev_plug_power}");
-                //Console.WriteLine($"    duration (TotalHours) = {metricDuration.TotalHours}, power = {durationPower}, kWh = {(durationPower / 1000 * metricDuration.TotalHours)}");
-                //Console.WriteLine($"    metricData.kWh_bucket_DAY  = {metricData.kWh_bucket_DAY} ");
-                //Console.WriteLine($"    metricData.kWh_bucket_YEAR = {metricData.kWh_bucket_YEAR} ");
+                metricData.kWh_bucket_DAY += tempkWh;
+                metricData.kWh_bucket_YEAR += tempkWh;
+
+                Console.WriteLine("");
+                Console.WriteLine($"{metricData.metricDateTime.ToString("MM/dd/yyyy HH:mm:ss")}, power = {metricData.plug_power}, prev = {prev_plug_power}");
+                Console.WriteLine($"    duration (TotalHours) = {metricDuration.TotalHours}, power = {durationPower}, kWh = {tempkWh}");
+                Console.WriteLine($"    metricData.kWh_bucket_DAY  = {metricData.kWh_bucket_DAY} ");
+                Console.WriteLine($"    metricData.kWh_bucket_YEAR = {metricData.kWh_bucket_YEAR} ");
 
                 // Update the DAY bucket Total
                 MetricTotal metricTotal = new MetricTotal
@@ -203,14 +217,14 @@ public sealed class EmoncmsLogMetricsService
                 metricTotalContainer.UpsertItemAsync<MetricTotal>(metricTotal, new PartitionKey(metricTotal.TotalBucket));
 
                 // Update the YEAR bucket Total
-                metricTotal = new MetricTotal
+                MetricYearTotal metricYearTotal = new MetricYearTotal
                 {
                     id = "YEAR",
                     TotalBucket = int.Parse(metricData.metricDateTime.ToString("yyyy")),
                     LastUpdateDateTime = metricData.metricDateTime,
                     TotalValue = metricData.kWh_bucket_YEAR.ToString("F2")
                 };
-                metricTotalContainer.UpsertItemAsync<MetricTotal>(metricTotal, new PartitionKey(metricTotal.TotalBucket));
+                metricYearTotalContainer.UpsertItemAsync<MetricYearTotal>(metricYearTotal, new PartitionKey(metricYearTotal.TotalBucket));
             }
 
             MetricDataOld metricDataOld = new MetricDataOld();

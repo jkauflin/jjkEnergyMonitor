@@ -34,7 +34,7 @@ public sealed class WindowsBackgroundService : BackgroundService
         try
         {
             /*
-            // Get configuration parameters from the Secrets JSON (not checked into source code control)
+            // Get configuration parameters from the Secrets JSON (not checked into source code control) *** Only for Development ***
             IConfigurationRoot config = new ConfigurationBuilder()
                 .AddUserSecrets<Program>()
                 .Build();
@@ -95,6 +95,7 @@ public sealed class WindowsBackgroundService : BackgroundService
             // Use the Cosmos Client to construct objects for the Point and Total containers
             Container metricPointContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricPoint");
             Container metricTotalContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricTotal");
+            Container metricYearTotalContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricYearTotal");
 
             // Construct the data object to hold values between calls
             var metricData = new MetricData();
@@ -120,10 +121,10 @@ public sealed class WindowsBackgroundService : BackgroundService
 
             dayVal = int.Parse(metricData.metricDateTime.ToString("yyyy"));
             queryText = $"SELECT * FROM c WHERE c.id = \"YEAR\" AND c.TotalBucket = {dayVal} ";
-            feed = metricTotalContainer.GetItemQueryIterator<MetricTotal>(queryText);
-            while (feed.HasMoreResults)
+            var feed2 = metricYearTotalContainer.GetItemQueryIterator<MetricYearTotal>(queryText);
+            while (feed2.HasMoreResults)
             {
-                var response = await feed.ReadNextAsync();
+                var response = await feed2.ReadNextAsync();
                 foreach (var item in response)
                 {
                     metricData.kWh_bucket_YEAR = float.Parse(item.TotalValue);
@@ -133,7 +134,7 @@ public sealed class WindowsBackgroundService : BackgroundService
             // Call the metric log service in a loop until stop requested
             while (!stoppingToken.IsCancellationRequested)
             {
-                metricData = _logMetricsService.LogMetrics(metricData, metricPointContainer, metricTotalContainer, smartPlugUrl, emoncmsInputUrl);
+                metricData = _logMetricsService.LogMetrics(metricData, metricPointContainer, metricTotalContainer, metricYearTotalContainer, smartPlugUrl, emoncmsInputUrl);
 
                 //_logger.LogWarning("Metrics successfully logged to EMONCMS");
                 await Task.Delay(TimeSpan.FromSeconds(intervalSeconds), stoppingToken);
