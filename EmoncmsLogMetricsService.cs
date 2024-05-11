@@ -176,7 +176,7 @@ public sealed class EmoncmsLogMetricsService
                 PointDayTime = int.Parse(metricData.metricDateTime.ToString("yyHHmmss")),
                 pvVolts = metricData.plug_voltage.ToString("F3"),
                 pvAmps = metricData.plug_current.ToString("F3"),
-                pvWatts = metricData.plug_power.ToString("F3)
+                pvWatts = metricData.plug_power.ToString("F3")
             };
 
             // Insert a new entity into the Cosmos DB Metric Point container
