@@ -165,8 +165,14 @@ public sealed class EmoncmsLogMetricsService
             GetAsyncJson(smartPlugUrl + "/sensor/kauf_plug_power").Wait();
             metricData.plug_power = getFloatValue(jsonStr);
 
-            metricData.metricDateTime = DateTime.Now;
+            // Ignore zero values
+            if (metricData.plug_power < 0.001)
+            {
+                return metricData;
+            }
 
+            // Insert a metric point
+            metricData.metricDateTime = DateTime.Now;
             MetricPoint metricPoint = new MetricPoint
             {
                 id = Guid.NewGuid().ToString(),
