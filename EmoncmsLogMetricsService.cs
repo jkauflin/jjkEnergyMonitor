@@ -206,11 +206,11 @@ public sealed class EmoncmsLogMetricsService
                 metricData.kWh_bucket_DAY += tempkWh;
                 metricData.kWh_bucket_YEAR += tempkWh;
 
-                Console.WriteLine("");
-                Console.WriteLine($"{metricData.metricDateTime.ToString("MM/dd/yyyy HH:mm:ss")}, power = {metricData.plug_power}, prev = {prev_plug_power}");
-                Console.WriteLine($"    duration (TotalHours) = {metricDuration.TotalHours}, power = {durationPower}, kWh = {tempkWh}");
-                Console.WriteLine($"    metricData.kWh_bucket_DAY  = {metricData.kWh_bucket_DAY} ");
-                Console.WriteLine($"    metricData.kWh_bucket_YEAR = {metricData.kWh_bucket_YEAR} ");
+                //Console.WriteLine("");
+                //Console.WriteLine($"{metricData.metricDateTime.ToString("MM/dd/yyyy HH:mm:ss")}, power = {metricData.plug_power}, prev = {prev_plug_power}");
+                //Console.WriteLine($"    duration (TotalHours) = {metricDuration.TotalHours}, power = {durationPower}, kWh = {tempkWh}");
+                //Console.WriteLine($"    metricData.kWh_bucket_DAY  = {metricData.kWh_bucket_DAY} ");
+                //Console.WriteLine($"    metricData.kWh_bucket_YEAR = {metricData.kWh_bucket_YEAR} ");
 
                 // Update the DAY bucket Total
                 MetricTotal metricTotal = new MetricTotal
