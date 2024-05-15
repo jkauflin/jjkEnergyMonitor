@@ -193,18 +193,13 @@ public sealed class EmoncmsLogMetricsService
             {
                 TimeSpan metricDuration = metricData.metricDateTime - prev_metricDateTime;
 
-                //float powerDiff = (float)(Math.Abs(metricData.plug_power - prev_plug_power) / 2.0);
-                /*
                 float powerDiff = (float)(Math.Abs(metricData.plug_power - prev_plug_power) / 2.0);
                 float durationPower = prev_plug_power + powerDiff;
                 if (prev_plug_power > metricData.plug_power)
                 {
                     durationPower = metricData.plug_power + powerDiff;
                 }
-                float tempkWh = (durationPower / 1000) * (float)metricDuration.TotalHours;
-                */
-
-                float tempkWh = (metricData.plug_power / 1000) * (float)metricDuration.TotalHours;
+                float tempkWh = (durationPower / 1000.0) * (float)metricDuration.TotalHours;
 
                 metricData.kWh_bucket_DAY += tempkWh;
                 metricData.kWh_bucket_YEAR += tempkWh;
