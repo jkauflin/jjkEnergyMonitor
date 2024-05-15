@@ -199,7 +199,7 @@ public sealed class EmoncmsLogMetricsService
                 {
                     durationPower = metricData.plug_power + powerDiff;
                 }
-                float tempkWh = (durationPower / 1000.0) * (float)metricDuration.TotalHours;
+                float tempkWh = (durationPower / 1000.0f) * (float)metricDuration.TotalHours;
 
                 metricData.kWh_bucket_DAY += tempkWh;
                 metricData.kWh_bucket_YEAR += tempkWh;
