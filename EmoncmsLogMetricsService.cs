@@ -1,5 +1,5 @@
 ﻿/*==============================================================================
-(C) Copyright 2016,2019,2021,2023 John J Kauflin, All rights reserved. 
+(C) Copyright 2016,2019,2021,2023,2024 John J Kauflin, All rights reserved. 
 -----------------------------------------------------------------------------
 DESCRIPTION:  Monitor and logging program to get sensor data from a 
               smart plug monitoring the energy production of a grid-tie
@@ -67,6 +67,7 @@ Modification History
 2024-05-10 JJK  Went back to using a .env file for configuration parameters
                 because User Secrets is only for Development (not Production)
 2024-05-11 JJK  Made adjustments to the containers and the kWh calc
+2024-06-07 JJK  Turn off update of old emoncms metric system
 =============================================================================*/
 
 using Microsoft.Azure.Cosmos;
@@ -172,7 +173,8 @@ public sealed class EmoncmsLogMetricsService
             }
 
             // Insert a metric point
-            metricData.metricDateTime = DateTime.Now;
+            //metricData.metricDateTime = DateTime.Now;
+            metricData.metricDateTime = DateTime.UtcNow;
             MetricPoint metricPoint = new MetricPoint
             {
                 id = Guid.NewGuid().ToString(),
@@ -231,15 +233,15 @@ public sealed class EmoncmsLogMetricsService
                 metricYearTotalContainer.UpsertItemAsync<MetricYearTotal>(metricYearTotal, new PartitionKey(metricYearTotal.TotalBucket));
             }
 
+            /* 2024-06-07 JJK - turn off update of old metric system
             MetricDataOld metricDataOld = new MetricDataOld();
             metricDataOld.pvVolts = metricData.plug_voltage.ToString("F2");
             metricDataOld.pvAmps = metricData.plug_current.ToString("F2");
             metricDataOld.pvWatts = metricData.plug_power.ToString("F2");
-
             var tempUrl = emoncmsInputUrl + "&fulljson=" + JsonSerializer.Serialize<MetricDataOld>(metricDataOld);
-
             // Send the data to the emoncms running on the website
             GetAsync(tempUrl).Wait();
+            */
         }
         catch (Exception ex)
         {
