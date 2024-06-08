@@ -173,13 +173,12 @@ public sealed class EmoncmsLogMetricsService
             }
 
             // Insert a metric point
-            //metricData.metricDateTime = DateTime.Now;
-            metricData.metricDateTime = DateTime.UtcNow;
+            metricData.metricDateTime = DateTime.Now;
             MetricPoint metricPoint = new MetricPoint
             {
                 id = Guid.NewGuid().ToString(),
                 PointDay = int.Parse(metricData.metricDateTime.ToString("yyyyMMdd")),
-                PointDateTime = metricData.metricDateTime,
+                PointDateTime = metricData.metricDateTime.ToUniversalTime(),
                 PointYearMonth = int.Parse(metricData.metricDateTime.ToString("yyyyMM")),
                 PointDayTime = int.Parse(metricData.metricDateTime.ToString("yyHHmmss")),
                 pvVolts = metricData.plug_voltage.ToString("F3"),
