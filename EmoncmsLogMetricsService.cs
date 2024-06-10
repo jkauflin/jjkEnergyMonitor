@@ -125,6 +125,8 @@ public sealed class EmoncmsLogMetricsService
         {
             // Reset the DAY bucket in the morning
             metricData.kWh_bucket_DAY = 0.0f;
+            metricData.plug_current_max = 0.0f;
+            metricData.plug_power_max = 0.0f;
 
             // Reset the YEAR bucket on the morning of the 1st day of the year
             if (currDateTime.Month == 1 && currDateTime.Day == 1)
@@ -205,6 +207,15 @@ public sealed class EmoncmsLogMetricsService
                 metricData.kWh_bucket_DAY += tempkWh;
                 metricData.kWh_bucket_YEAR += tempkWh;
 
+                if (metricData.plug_current > metricData.plug_current_max)
+                {
+                    metricData.plug_current_max = metricData.plug_current;
+                }
+                if (metricData.plug_power > metricData.plug_power_max)
+                {
+                    metricData.plug_power_max = metricData.plug_power;
+                }
+
                 //Console.WriteLine("");
                 //Console.WriteLine($"{metricData.metricDateTime.ToString("MM/dd/yyyy HH:mm:ss")}, power = {metricData.plug_power}, prev = {prev_plug_power}");
                 //Console.WriteLine($"    duration (TotalHours) = {metricDuration.TotalHours}, power = {durationPower}, kWh = {tempkWh}");
@@ -217,7 +228,9 @@ public sealed class EmoncmsLogMetricsService
                     id = "DAY",
                     TotalBucket = int.Parse(metricData.metricDateTime.ToString("yyyyMMdd")),
                     LastUpdateDateTime = metricData.metricDateTime,
-                    TotalValue = metricData.kWh_bucket_DAY.ToString("F3")
+                    TotalValue = metricData.kWh_bucket_DAY.ToString("F3"),
+                    AmpMaxValue = metricData.plug_current_max.ToString("F3"),
+                    WattMaxValue = metricData.plug_power_max.ToString("F3")
                 };
                 metricTotalContainer.UpsertItemAsync<MetricTotal>(metricTotal, new PartitionKey(metricTotal.TotalBucket));
 

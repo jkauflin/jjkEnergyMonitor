@@ -102,7 +102,9 @@ public sealed class WindowsBackgroundService : BackgroundService
             metricData.metricDateTime = DateTime.Now;
             metricData.plug_voltage = 0.0f;
             metricData.plug_current = 0.0f;
+            metricData.plug_current_max = 0.0f;
             metricData.plug_power = 0.0f;
+            metricData.plug_power_max = 0.0f;
             metricData.kWh_bucket_DAY = 0.0f;
             metricData.kWh_bucket_YEAR = 0.0f;
 
@@ -116,6 +118,15 @@ public sealed class WindowsBackgroundService : BackgroundService
                 foreach (var item in response)
                 {
                     metricData.kWh_bucket_DAY = float.Parse(item.TotalValue);
+
+                    if (item.AmpMaxValue != null)
+                    {
+                        metricData.plug_current_max = float.Parse(item.AmpMaxValue);
+                    }
+                    if (item.WattMaxValue != null)
+                    {
+                        metricData.plug_power_max = float.Parse(item.WattMaxValue);
+                    }
                 }
             }
 
