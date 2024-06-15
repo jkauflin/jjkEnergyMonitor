@@ -68,6 +68,7 @@ Modification History
                 because User Secrets is only for Development (not Production)
 2024-05-11 JJK  Made adjustments to the containers and the kWh calc
 2024-06-07 JJK  Turn off update of old emoncms metric system
+2024-06-15 JJK  Re-deploy
 =============================================================================*/
 
 using Microsoft.Azure.Cosmos;
