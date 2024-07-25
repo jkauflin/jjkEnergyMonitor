@@ -69,11 +69,11 @@ public sealed class WindowsBackgroundService : BackgroundService
                 {
                     emoncmsInputUrl = tempStr;
                 }
-                else if (line.Contains("AzureDBEndpointUri"))
+                else if (line.Contains("JJKWebNoSqlUri"))
                 {
                     azureDBEndpointUri = tempStr;
                 }
-                else if (line.Contains("AzureDBPrimaryKey"))
+                else if (line.Contains("JJKWebNoSqlKey"))
                 {
                     azureDBPrimaryKey = tempStr;
                 }
@@ -93,9 +93,9 @@ public sealed class WindowsBackgroundService : BackgroundService
             );
 
             // Use the Cosmos Client to construct objects for the Point and Total containers
-            Container metricPointContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricPoint");
-            Container metricTotalContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricTotal");
-            Container metricYearTotalContainer = cosmosClient.GetContainer("MediaGalleryDB", "MetricYearTotal");
+            Container metricPointContainer = cosmosClient.GetContainer("JJKWebDB", "MetricPoint");
+            Container metricTotalContainer = cosmosClient.GetContainer("JJKWebDB", "MetricTotal");
+            Container metricYearTotalContainer = cosmosClient.GetContainer("JJKWebDB", "MetricYearTotal");
 
             // Construct the data object to hold values between calls
             var metricData = new MetricData();
