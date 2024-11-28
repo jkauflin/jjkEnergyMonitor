@@ -1,4 +1,6 @@
 ﻿
+using Newtonsoft.Json;
+
 namespace App.WindowsService
 {
     public class MetricTotal
@@ -9,5 +11,10 @@ namespace App.WindowsService
         public string TotalValue { get; set; }              // Total value
         public string AmpMaxValue { get; set; }              // Max current value
         public string WattMaxValue { get; set; }              // Max power value
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
     }
 }

@@ -1,4 +1,6 @@
 ﻿
+using Newtonsoft.Json;
+
 namespace App.WindowsService
 {
     public class MetricYearTotal
@@ -7,5 +9,10 @@ namespace App.WindowsService
         public int TotalBucket { get; set; }                // partitionKey (timestamp year value yyyy) int.Parse(dateTime.ToString("yyyy"))
         public DateTime LastUpdateDateTime { get; set; }
         public string TotalValue { get; set; }              // Total value
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
     }
 }

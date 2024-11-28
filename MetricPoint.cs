@@ -1,4 +1,5 @@
-﻿
+﻿using Newtonsoft.Json;
+
 namespace App.WindowsService
 {
     public class MetricPoint
@@ -11,5 +12,10 @@ namespace App.WindowsService
         public string pvVolts { get; set; }
         public string pvAmps { get; set; }
         public string pvWatts { get; set; }
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
+
 }
