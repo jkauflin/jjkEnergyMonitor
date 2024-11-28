@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.ComponentModel;
 using System.Net;
+using Newtonsoft.Json;
 using Microsoft.Azure.Cosmos;
 using Container = Microsoft.Azure.Cosmos.Container;
 
@@ -93,9 +94,9 @@ public sealed class WindowsBackgroundService : BackgroundService
             );
 
             // Use the Cosmos Client to construct objects for the Point and Total containers
-            Container metricPointContainer = cosmosClient.GetContainer("jjkdbnew1", "MetricPoint");
-            Container metricTotalContainer = cosmosClient.GetContainer("jjkdbnew1", "MetricTotal");
-            Container metricYearTotalContainer = cosmosClient.GetContainer("jjkdbnew1", "MetricYearTotal");
+            Container metricPointContainer = cosmosClient.GetContainer("jjkdb1", "MetricPoint");
+            Container metricTotalContainer = cosmosClient.GetContainer("jjkdb1", "MetricTotal");
+            Container metricYearTotalContainer = cosmosClient.GetContainer("jjkdb1", "MetricYearTotal");
 
             // Construct the data object to hold values between calls
             var metricData = new MetricData();
