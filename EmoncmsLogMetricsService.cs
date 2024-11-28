@@ -69,7 +69,8 @@ Modification History
 2024-05-11 JJK  Made adjustments to the containers and the kWh calc
 2024-06-07 JJK  Turn off update of old emoncms metric system
 2024-06-15 JJK  Re-deploy
-2024-07-25 JJK  Switch to new Azure Cosmos DB account
+2024-07-25 JJK  Switch to new Azure Cosmos DB account, and added PointDataDays
+                to purge Point data older than X days
 =============================================================================*/
 
 using Microsoft.Azure.Cosmos;
@@ -118,7 +119,8 @@ public sealed class EmoncmsLogMetricsService
     }
 
 
-    public MetricData LogMetrics(MetricData metricData, Container metricPointContainer, Container metricTotalContainer, Container metricYearTotalContainer, string smartPlugUrl, string emoncmsInputUrl)
+    public MetricData LogMetrics(MetricData metricData, Container metricPointContainer, Container metricTotalContainer, Container metricYearTotalContainer, 
+        string smartPlugUrl, int pointDataDays)
     {
         // Limit the metric send to between the hours of 6:00am and 9:00pm
         DateTime currDateTime = DateTime.Now;
@@ -135,6 +137,7 @@ public sealed class EmoncmsLogMetricsService
             {
                 metricData.kWh_bucket_YEAR = 0.0f;
             }
+
         }
         if (currHour < 6 || currHour >= 21)
         {

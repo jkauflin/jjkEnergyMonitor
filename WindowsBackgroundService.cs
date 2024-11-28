@@ -22,9 +22,9 @@ public sealed class WindowsBackgroundService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         int intervalSeconds = 15;
+        int pointDataDays = 3;
         string? smartPlugUrl = "";
         string? weatherUrl = "";
-        string? emoncmsInputUrl = "";
         string? jjkwebStorageConnStr = "";
         string? azureDBEndpointUri = "";
         string? azureDBPrimaryKey = "";
@@ -65,17 +65,17 @@ public sealed class WindowsBackgroundService : BackgroundService
                 {
                     smartPlugUrl = tempStr;
                 }
-                else if (line.Contains("EMONCMS_INPUT_URL"))
-                {
-                    emoncmsInputUrl = tempStr;
-                }
-                else if (line.Contains("JJKWebNoSqlUri"))
+                else if (line.Contains("AzureDBEndpointUri"))
                 {
                     azureDBEndpointUri = tempStr;
                 }
-                else if (line.Contains("JJKWebNoSqlKey"))
+                else if (line.Contains("AzureDBPrimaryKey"))
                 {
                     azureDBPrimaryKey = tempStr;
+                }
+                else if (line.Contains("POINT_DATA_DAYS"))
+                {
+                    pointDataDays = int.Parse(tempStr);
                 }
             }
 
@@ -93,9 +93,9 @@ public sealed class WindowsBackgroundService : BackgroundService
             );
 
             // Use the Cosmos Client to construct objects for the Point and Total containers
-            Container metricPointContainer = cosmosClient.GetContainer("JJKWebDB", "MetricPoint");
-            Container metricTotalContainer = cosmosClient.GetContainer("JJKWebDB", "MetricTotal");
-            Container metricYearTotalContainer = cosmosClient.GetContainer("JJKWebDB", "MetricYearTotal");
+            Container metricPointContainer = cosmosClient.GetContainer("jjkdbnew1", "MetricPoint");
+            Container metricTotalContainer = cosmosClient.GetContainer("jjkdbnew1", "MetricTotal");
+            Container metricYearTotalContainer = cosmosClient.GetContainer("jjkdbnew1", "MetricYearTotal");
 
             // Construct the data object to hold values between calls
             var metricData = new MetricData();
@@ -145,7 +145,7 @@ public sealed class WindowsBackgroundService : BackgroundService
             // Call the metric log service in a loop until stop requested
             while (!stoppingToken.IsCancellationRequested)
             {
-                metricData = _logMetricsService.LogMetrics(metricData, metricPointContainer, metricTotalContainer, metricYearTotalContainer, smartPlugUrl, emoncmsInputUrl);
+                metricData = _logMetricsService.LogMetrics(metricData, metricPointContainer, metricTotalContainer, metricYearTotalContainer, smartPlugUrl, pointDataDays);
 
                 //_logger.LogWarning("Metrics successfully logged to EMONCMS");
                 await Task.Delay(TimeSpan.FromSeconds(intervalSeconds), stoppingToken);
