@@ -153,7 +153,7 @@ public sealed class WindowsBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error logging to EMONCMS, Message = {ex.Message}");
+            _logger.LogError(ex, $"Error logging to DB, Message = {ex.Message} {ex.StackTrace}");
 
             // Terminates this process and returns an exit code to the operating system.
             // This is required to avoid the 'BackgroundServiceExceptionBehavior', which
